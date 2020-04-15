@@ -1,0 +1,59 @@
+﻿@model IEnumerable<CafeApp.Models.Foods>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Food Menu</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FoodCategory)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FoodName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Photo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Price)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Remarks)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FoodCategory)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FoodName)
+            </td>
+            <td>
+                <img id="ProfilePicture" src="~/UploadedFiles/@Html.Raw(item.PhotoFile)" width="150" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Remarks)
+            </td>
+
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.FoodsId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.FoodsId }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.FoodsId })
+            </td>
+        </tr>
+    }
+
+</table>

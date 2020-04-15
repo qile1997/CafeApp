@@ -1,0 +1,87 @@
+﻿@model CafeApp.Models.UserRoles
+
+@{
+    Layout = "~/Views/Shared/Default_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Login</title>
+
+</head>
+<body>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+
+    <div class="form-horizontal jumbotron">
+
+        <div style="margin-left:100px">
+            <h2>Cashier Login</h2>
+        </div>
+
+        <link href="~/Content/bootstrap-theme.css" rel="stylesheet" />
+        <link href="~/Content/bootstrap-theme.min.css" rel="stylesheet" />
+        <link href="~/Content/bootstrap.css" rel="stylesheet" />
+        <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+        <link href="~/Content/PagedList.css" rel="stylesheet" />
+        <link href="~/Content/Site.css" rel="stylesheet" />
+
+        <hr />
+
+        <div class="form-group ">
+            @Html.Label("Username : ", htmlAttributes: new { @class = "control-label col-md-2 " })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Username, null, new { htmlAttributes = new { @class = "form-control ", required = "required" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.Label("Password :", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Password, null, new { htmlAttributes = new { @class = "form-control", required = "required", type = "password", id = "myInput" } })
+            </div>
+        </div>
+        <span onclick="myFunction()" class="glyphicon glyphicon-eye-open" style="margin-left:180px"></span>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Login" class="btn btn-default" />
+            </div>
+        </div>
+        @if (ViewBag.FailLoginvalue != null)
+        {
+            <div class="alert alert-danger text-center">
+                @ViewBag.FailLoginvalue
+            </div>
+        }
+    </div>
+    }
+
+</body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    function myFunction() {
+        var x = document.getElementById("myInput");
+        if (x.type == "password") {
+            x.type = "text";
+        } else {
+            x.type = "password";
+        }
+    }
+
+
+    $(document).ready(function () {
+        $("#Username").focus();
+    })
+</script>
+
+

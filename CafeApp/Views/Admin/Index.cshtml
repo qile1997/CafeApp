@@ -1,0 +1,48 @@
+﻿@model IEnumerable<CafeApp.Models.UserRoles>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Create user menu</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Username)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Password)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Roles)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Password)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Roles)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.UserRolesId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.UserRolesId }) |
+                @if (item.UserRolesId != Convert.ToInt32(Session["AdminId"]))
+                {
+                    @Html.ActionLink("Delete", "Delete", new { id = item.UserRolesId, @readonly = "readonly" })
+                }
+            </td>
+        </tr>
+    }
+</table>

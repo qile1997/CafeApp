@@ -1,0 +1,116 @@
+﻿@model IEnumerable<CafeApp.Models.OrderCart>
+
+@{
+    Layout = "~/Views/Shared/Customer_Layout.cshtml";
+}
+
+<h2>Order Cart</h2>
+
+<div id="successmessage" style="color:green"></div>
+<div id="failmessage" style="color:red"></div>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div style="color:green">@ViewBag.SuccessMessage</div>
+}
+
+<h4 class="ClearCart">@Html.ActionLink("Clear Cart", "OrderCart")</h4>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Foods.FoodName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FoodQuantity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TotalAmount)
+        </th>
+        <th></th>
+    </tr>
+    @using (Html.BeginForm())
+    {
+        foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Foods.FoodName)
+                </td>
+                <td>
+                    <button class="operator btn btn-success" value="+" data-id="@item.FoodsId"> + </button>
+                    @item.FoodQuantity
+                    <button class="operator btn btn-success" value="-" data-id="@item.FoodsId"> - </button>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalAmount)
+                </td>
+                <td>
+                    <button class="operator btn btn-danger" value="x" data-id="@item.FoodsId">x</button>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td style="font-weight:bold">
+                Total Amount
+            </td>
+            <td>
+
+            </td>
+            <td>
+                @ViewBag.FoodTotalSum
+            </td>
+        </tr>
+    }
+
+
+</table>
+<br />
+<hr />
+
+<h3 style="text-align:right">@Html.ActionLink("Confirm Order", "ConfirmOrderPage")</h3>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $(".operator").click(function (operator) {
+            var dataId = $(this).attr("data-id");
+            var operation = operator.target.value;
+            console.log(operation);
+            $.ajax({
+                type: "POST",
+                url: "/Customer/Quantity",
+                data: { _operator: operation, Id: dataId },
+                success: function (response) {
+                    if (response.CartMessage) {
+                        document.getElementById('successmessage').innerHTML = response.Msg;
+                    } else {
+                        document.getElementById('failmessage').innerHTML = response.Msg;
+                    }
+                    RefreshPage();
+                }
+            })
+        })
+
+        $(".ClearCart").click(function () {
+            $.ajax({
+                type: "GET",
+                url: "/Customer/ClearCart",
+                success: function (response) {
+                    document.getElementById('successmessage').innerHTML = response.Msg;
+                    RefreshPage();
+                }
+            })
+        })
+
+        //$(".ClearCart").click(function () {
+        //    RefreshPage();
+        //})
+
+   
+        function RefreshPage() {
+            setTimeout(location.reload.bind(location), 1000);
+        }
+
+    })
+</script>

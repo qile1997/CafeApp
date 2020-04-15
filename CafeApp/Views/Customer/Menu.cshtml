@@ -1,0 +1,52 @@
+﻿@model IEnumerable<CafeApp.Models.Foods>
+
+@{
+    Layout = "~/Views/Shared/Customer_Layout.cshtml";
+}
+<h2>Menu</h2>
+<hr />
+<div id="successmessage" style="color:green"></div>
+
+<style>
+    .button:hover {
+        background-color: lightblue;
+        color: white           
+    }
+</style>
+
+@foreach (var item in Model)
+{
+    <div style="margin: 10px; text-align: center; float: left">
+        <dl>
+            <dt>
+                <img id="ProfilePicture" src="~/UploadedFiles/@Html.Raw(item.PhotoFile)" width="150" />
+            </dt>
+            <dt>
+                @Html.DisplayFor(modelItem => item.FoodName)
+            </dt>
+            <dt>
+                RM @Html.DisplayFor(modelItem => item.Price)
+            </dt>
+        </dl>
+        <button class="button btn btn-info" data-id="@item.FoodsId">Add To Cart</button>
+    </div>
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        $(".button").click(function () {
+            var dataId = $(this).attr("data-id");
+            $.ajax({
+                type: "POST",
+                url: "/Customer/Cart",
+                data: { Id: dataId },
+                success: function (response) {
+                    document.getElementById('successmessage').innerHTML = response.Msg;
+                    setTimeout(location.reload.bind(location), 1000);
+                }
+            })
+        })
+    })
+</script>

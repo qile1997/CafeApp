@@ -1,0 +1,39 @@
+﻿@model IEnumerable<CafeApp.Models.Table>
+
+@{
+    Layout = "~/Views/Shared/Cashier_Layout.cshtml";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.TableNo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TableStatus)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TableNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TableStatus)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.TableId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.TableId }) 
+            </td>
+        </tr>
+    }
+
+</table>
