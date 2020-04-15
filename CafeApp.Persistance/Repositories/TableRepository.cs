@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CafeApp.DomainEntity;
 using CafeApp.DomainEntity.Interfaces;
+using System.Data.Entity;
 
 namespace CafeApp.Persistance.Repositories
 {
@@ -13,27 +14,29 @@ namespace CafeApp.Persistance.Repositories
         private CafeWebApp db = new CafeWebApp();
         public void AddTable(Table table)
         {
-            throw new NotImplementedException();
+            db.Table.Add(table);
+            Save();
         }
 
         public IEnumerable<Table> GetTables()
         {
-            return
+            return db.Table.ToList();
         }
 
         public void Save()
         {
-            throw new NotImplementedException();
+            db.SaveChanges();
         }
 
         public Table table(int? id)
         {
-            throw new NotImplementedException();
+            Table table = db.Table.Find(id);
+            return table;
         }
 
         public void UpdateTable(Table table)
         {
-            throw new NotImplementedException();
+            db.Entry(table).State = EntityState.Modified;
         }
     }
 }

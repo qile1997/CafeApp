@@ -13,6 +13,7 @@ namespace CafeApp.Controllers
     {
         //private CafeWebApp db = new CafeWebApp();
         private LoginRepository loginRepo = new LoginRepository();
+        private TableRepository tableRepo = new TableRepository();
         public ActionResult LoginPage()
         {
             return View();
@@ -34,7 +35,7 @@ namespace CafeApp.Controllers
         // GET: Cashier
         public ActionResult Index()
         {
-            return View(db.Table.ToList());
+            return View(tableRepo.GetTables());
         }
 
         // GET: Cashier/Details/5
@@ -44,7 +45,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Table table = db.Table.Find(id);
+            Table table = tableRepo.table(id);
             if (table == null)
             {
                 return HttpNotFound();
@@ -67,8 +68,7 @@ namespace CafeApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Table.Add(table);
-                db.SaveChanges();
+                tableRepo.AddTable(table);
                 return RedirectToAction("Index");
             }
 
@@ -82,7 +82,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Table table = db.Table.Find(id);
+            Table table = tableRepo.table(id);
             if (table == null)
             {
                 return HttpNotFound();
@@ -96,13 +96,10 @@ namespace CafeApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "TableId,TableNo,TableStatus")] Table table)
-        {
-            int checkId = Convert.ToInt32(Session["CashierId"]);
+        {          
             if (ModelState.IsValid)
             {
-                db.Entry(table).State = EntityState.Modified;
-                table.UserRolesId = checkId;
-                db.SaveChanges();
+                tableRepo.UpdateTable(table);
                 return RedirectToAction("Index");
             }
             return View(table);
@@ -111,40 +108,6 @@ namespace CafeApp.Controllers
         {
             Session.Abandon();
             return View("LoginPage");
-        }
-        // GET: Cashier/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Table table = db.Table.Find(id);
-            if (table == null)
-            {
-                return HttpNotFound();
-            }
-            return View(table);
-        }
-
-        // POST: Cashier/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Table table = db.Table.Find(id);
-            db.Table.Remove(table);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
