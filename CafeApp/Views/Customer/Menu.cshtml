@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CafeApp.Models.Foods>
+﻿@model IEnumerable<CafeApp.DomainEntity.Foods>
 
 @{
     Layout = "~/Views/Shared/Customer_Layout.cshtml";
@@ -10,7 +10,7 @@
 <style>
     .button:hover {
         background-color: lightblue;
-        color: white           
+        color: white
     }
 </style>
 
@@ -42,11 +42,14 @@
                 type: "POST",
                 url: "/Customer/Cart",
                 data: { Id: dataId },
-                success: function (response) {
-                    document.getElementById('successmessage').innerHTML = response.Msg;
-                    setTimeout(location.reload.bind(location), 1000);
+                success: function (message) {
+                    $("#successmessage").text(Object.values(message));
+                    RefreshPage();
                 }
             })
         })
+        function RefreshPage() {
+             setTimeout(location.reload.bind(location), 1000);
+        }
     })
 </script>

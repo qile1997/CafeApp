@@ -98,7 +98,7 @@ namespace CafeApp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Foods foods = foodRepo.food(id);
-            //ViewBag.FoodPicture = foods.PhotoFile;
+            ViewBag.FoodPicture = foods.PhotoFile;
             if (foods == null)
             {
                 return HttpNotFound();

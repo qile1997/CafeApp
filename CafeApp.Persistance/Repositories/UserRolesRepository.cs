@@ -95,10 +95,7 @@ namespace CafeApp.Persistance.Repositories
 
         public UserRoles Login(UserRoles userRoles)
         {
-            var LoginUser = db.UserRoles.Where(d => d.Username == userRoles.Username && d.Password == userRoles.Password && d.Roles == Roles.Admin).SingleOrDefault();
-
-            return LoginUser;
-
+            return db.UserRoles.Where(d => d.Username == userRoles.Username && d.Password == userRoles.Password && d.Roles == Roles.Admin).SingleOrDefault(); ;
         }
 
         public void CreateAdmin()
@@ -114,7 +111,6 @@ namespace CafeApp.Persistance.Repositories
                 db.UserRoles.Add(user);
                 Save();
             }
-
         }
     }
 }

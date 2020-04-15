@@ -12,7 +12,6 @@ namespace CafeApp.Controllers
 {
     public class CustomerController : Controller
     {
-        private CafeWebApp db = new CafeWebApp();
         private FoodRepository foodRepo = new FoodRepository();
         private LoginRepository loginRepo = new LoginRepository();
         private OrderCartRepository orderRepo = new OrderCartRepository();
@@ -23,16 +22,15 @@ namespace CafeApp.Controllers
         [HttpPost]
         public ActionResult LoginPage(UserRoles userRoles)
         {
-            loginRepo.Login(userRoles);
             UserRoles user = loginRepo.Login(userRoles);
 
-            if (user.Roles == Roles.Customer)
+            if (user == null || user.Roles != Roles.Customer)
             {
-                Session["CustomerId"] = user.UserRolesId;
-                return RedirectToAction("Index");
+                ViewBag.FailMessage = "Your username / password is invalid";
+                return View();
             }
-
-            return View();
+            Session["CustomerId"] = user.UserRolesId;
+            return RedirectToAction("Menu");
         }
         public ActionResult Logout()
         {
@@ -41,41 +39,26 @@ namespace CafeApp.Controllers
         }
         public ActionResult Menu()
         {
-            var checkId = Convert.ToInt32(Session["CustomerId"]);
+            int checkId = SessionID();
             ViewBag.Count = orderRepo.FoodCount(checkId);
             return View(foodRepo.GetFoods());
+        }
+        public int SessionID()
+        {
+            int checkId = Convert.ToInt32(Session["CustomerId"]);
+            return checkId;
         }
         [HttpPost]
         public ActionResult Cart(int Id)
         {
-            var checkId = Convert.ToInt32(Session["CustomerId"]);
-            OrderCart cart = new OrderCart();
+            int checkId = SessionID();
+            string message = orderRepo.Cart(Id, checkId);
 
-            var filterCart = db.OrderCart.Where(d => d.FoodsId == Id && d.UserRolesId == checkId).SingleOrDefault();
-            var filterFood = db.Foods.Where(d => d.FoodsId == Id).SingleOrDefault();
-
-            if (filterCart != null)
-            {
-                filterCart.FoodQuantity++;
-                filterCart.TotalAmount = filterFood.Price * filterCart.FoodQuantity;
-                db.SaveChanges();
-                return Json(new { Msg = filterFood.FoodName + " added into quantity order" }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                cart.FoodsId = Id;
-                cart.TotalAmount = filterFood.Price;
-                cart.FoodQuantity = 1;
-                cart.UserRolesId = checkId;
-
-                db.OrderCart.Add(cart);
-                db.SaveChanges();
-                return Json(new { Msg = filterFood.FoodName + " added into order" }, JsonRequestBehavior.AllowGet);
-            }
+            return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
         public ActionResult OrderCart()
         {
-            var checkId = Convert.ToInt32(Session["CustomerId"]);
+            int checkId = SessionID();
 
             ViewBag.Count = orderRepo.FoodCount(checkId);
             ViewBag.FoodTotalSum = orderRepo.FoodPriceSum(checkId);
@@ -84,92 +67,28 @@ namespace CafeApp.Controllers
         [HttpPost]
         public ActionResult Quantity(string _operator, int Id)
         {
-            var checkId = Convert.ToInt32(Session["CustomerId"]);
-            var filterCart = db.OrderCart.Where(d => d.FoodsId == Id).SingleOrDefault();
-            var filterFood = db.Foods.Where(d => d.FoodsId == Id).SingleOrDefault();
-            if (_operator == "+")
-            {
-                filterCart.FoodQuantity++;
-                filterCart.TotalAmount = filterFood.Price * filterCart.FoodQuantity;
-                db.SaveChanges();
-                return Json(new { CartMessage = true, Msg = "Quantity Updated" }, JsonRequestBehavior.AllowGet);
-            }
-            else if (_operator == "x")
-            {
-                db.OrderCart.Remove(filterCart);
-                db.SaveChanges();
-                return Json(new { CartMessage = false, Msg = "Food Removed" }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                if (filterCart.FoodQuantity > 0)
-                {
-                    filterCart.FoodQuantity--;
-                    if (filterCart.FoodQuantity == 0)
-                    {
-                        db.OrderCart.Remove(filterCart);
-                        db.SaveChanges();
-                        return Json(new { CartMessage = false, Msg = "Food Removed" }, JsonRequestBehavior.AllowGet);
-                    }
-                    filterCart.TotalAmount = filterFood.Price * filterCart.FoodQuantity;
-                    db.SaveChanges();
-                    return Json(new { CartMessage = false, Msg = "Quantity Deleted" }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            return View();
+            string successmessage = orderRepo.CartQuantity(Id, _operator);
+            return Json(successmessage, JsonRequestBehavior.AllowGet);
         }
         public ActionResult ClearCart()
         {
-            foreach (var item in db.OrderCart)
-            {
-                db.OrderCart.Remove(item);
-            }
-
-            db.SaveChanges();
-            return Json(new { Msg = "Cart Cleared" }, JsonRequestBehavior.AllowGet);
+            string message = orderRepo.ClearCart();
+            return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
         public ActionResult ConfirmOrder(int Seat)
         {
-            int checkId = Convert.ToInt32(Session["CustomerId"]);
-            var checkSeat = db.Table.Where(d => d.UserRolesId == checkId).SingleOrDefault();
-            var replaceSeat = db.Table.Where(d => d.TableId == Seat).SingleOrDefault();
-            var filterfood = db.OrderCart.Where(d => d.UserRolesId == checkId).ToList();
-
-            if (filterfood.Count < 1)
-            {
-                return Json(new { ConfirmSeat = false, Msg = "No food in order cart. Cannot confirm order" }, JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                if (checkSeat != null)
-                {
-                    return Json(new { ConfirmSeat = false, Msg = "Your order is already confirmed, your table seat is " + replaceSeat.TableNo }, JsonRequestBehavior.AllowGet);
-                }
-
-                replaceSeat.UserRolesId = checkId;
-                replaceSeat.TableStatus = TableStatus.Occupied;
-                db.SaveChanges();
-
-                return Json(new { ConfirmSeat = true, Msg = "Order confirmed, your table seat is " + replaceSeat.TableNo }, JsonRequestBehavior.AllowGet);
-            }
+            int checkId = SessionID();
+            string message = orderRepo.ConfirmOrder(checkId, Seat);
+            return Json(new { message }, JsonRequestBehavior.AllowGet);
 
         }
         public ActionResult ConfirmOrderPage()
         {
-            var checkId = Convert.ToInt32(Session["CustomerId"]);
-            var filterCount = db.OrderCart.Where(d => d.UserRolesId == checkId).ToList();
-            int Count = 0;
-
-            foreach (var item in filterCount)
-            {
-                Count += item.FoodQuantity;
-            }
-            ViewBag.Count = Count;
-
-            var filterEmptyseats = db.Table.Where(d => d.TableStatus == TableStatus.Empty).ToList();
-
-            ViewBag.EmptySeatsList = new SelectList(filterEmptyseats, "TableId", "TableNo");
+            int checkId = SessionID();
+            ViewBag.Count = orderRepo.FoodCount(checkId);
+            var emptyseat = orderRepo.GetEmptyTables();
+            ViewBag.EmptySeatsList = new SelectList(emptyseat, "TableId", "TableNo");
 
             return View();
         }

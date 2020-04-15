@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Web.Mvc;
 using CafeApp.DomainEntity;
 using CafeApp.Persistance.Repositories;
@@ -17,16 +18,19 @@ namespace CafeApp.Controllers
         [HttpPost]
         public ActionResult LoginPage(UserRoles userRoles)
         {
-            loginRepo.Login(userRoles);
-            int? id = loginRepo.Login(userRoles).UserRolesId;
-            if (id != null)
+
+            UserRoles user = loginRepo.Login(userRoles);
+            if (user == null || user.Roles != Roles.Admin)
             {
-                Session["AdminId"] = id;
-                return RedirectToAction("Index");
+                ViewBag.FailMessage = "Your username / password is invalid";
+                return View();
             }
-            ViewBag.FailMessage = "Your username / password is invalid";
-            return View();
+
+            Session["AdminId"] = user.UserRolesId;
+            return RedirectToAction("Index");
+
         }
+
         public ActionResult Logout()
         {
             Session.Abandon();
@@ -100,10 +104,11 @@ namespace CafeApp.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Username,Password,Roles")] UserRoles userRoles)
+        public ActionResult Edit(UserRoles userRoles)
         {
             if (ModelState.IsValid)
             {
+                //int Id = Convert.ToInt32(Session["AdminId"]);
                 bool check = userRepo.CheckEditDuplicateUser(userRoles);
                 if (check)
                 {

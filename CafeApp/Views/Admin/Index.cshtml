@@ -1,10 +1,10 @@
-﻿@model IEnumerable<CafeApp.Models.UserRoles>
+﻿@model IEnumerable<CafeApp.DomainEntity.UserRoles>
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Create user menu</h2>
+<h2>Index</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -38,11 +38,12 @@
             <td>
                 @Html.ActionLink("Edit", "Edit", new { id = item.UserRolesId }) |
                 @Html.ActionLink("Details", "Details", new { id = item.UserRolesId }) |
-                @if (item.UserRolesId != Convert.ToInt32(Session["AdminId"]))
+                @if (Convert.ToInt32(Session["AdminId"]) != item.UserRolesId)
                 {
-                    @Html.ActionLink("Delete", "Delete", new { id = item.UserRolesId, @readonly = "readonly" })
+                    @Html.ActionLink("Delete", "Delete", new { id = item.UserRolesId })
                 }
             </td>
         </tr>
     }
+
 </table>

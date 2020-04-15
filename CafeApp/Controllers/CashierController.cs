@@ -21,16 +21,15 @@ namespace CafeApp.Controllers
         [HttpPost]
         public ActionResult LoginPage(UserRoles userRoles)
         {
-            loginRepo.Login(userRoles);
             UserRoles user = loginRepo.Login(userRoles);
 
-            if (user.Roles == Roles.Cashier)
+            if (user == null || user.Roles != Roles.Cashier)
             {
-                Session["CashierId"] = user.UserRolesId;
-                return RedirectToAction("Index");
+                ViewBag.FailMessage = "Your username / password is invalid";
+                return View();
             }
-
-            return View();
+            Session["CashierId"] = user.UserRolesId;
+            return RedirectToAction("Index");
         }
         // GET: Cashier
         public ActionResult Index()
@@ -96,7 +95,7 @@ namespace CafeApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "TableId,TableNo,TableStatus")] Table table)
-        {          
+        {
             if (ModelState.IsValid)
             {
                 tableRepo.UpdateTable(table);

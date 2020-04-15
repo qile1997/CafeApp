@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CafeApp.Models.OrderCart>
+﻿@model IEnumerable<CafeApp.DomainEntity.OrderCart>
 
 @{
     Layout = "~/Views/Shared/Customer_Layout.cshtml";
@@ -8,11 +8,6 @@
 
 <div id="successmessage" style="color:green"></div>
 <div id="failmessage" style="color:red"></div>
-
-@if (ViewBag.SuccessMessage != null)
-{
-    <div style="color:green">@ViewBag.SuccessMessage</div>
-}
 
 <h4 class="ClearCart">@Html.ActionLink("Clear Cart", "OrderCart")</h4>
 
@@ -55,7 +50,6 @@
                 Total Amount
             </td>
             <td>
-
             </td>
             <td>
                 @ViewBag.FoodTotalSum
@@ -82,11 +76,7 @@
                 url: "/Customer/Quantity",
                 data: { _operator: operation, Id: dataId },
                 success: function (response) {
-                    if (response.CartMessage) {
-                        document.getElementById('successmessage').innerHTML = response.Msg;
-                    } else {
-                        document.getElementById('failmessage').innerHTML = response.Msg;
-                    }
+                    $("#successmessage").text(Object.value(response));
                     RefreshPage();
                 }
             })
@@ -97,20 +87,14 @@
                 type: "GET",
                 url: "/Customer/ClearCart",
                 success: function (response) {
-                    document.getElementById('successmessage').innerHTML = response.Msg;
+                    $("#successmessage").text(Object.value(response));
                     RefreshPage();
                 }
             })
         })
 
-        //$(".ClearCart").click(function () {
-        //    RefreshPage();
-        //})
-
-   
         function RefreshPage() {
             setTimeout(location.reload.bind(location), 1000);
         }
-
     })
 </script>

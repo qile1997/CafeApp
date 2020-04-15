@@ -271,7 +271,6 @@
     <Content Include="Views\Admin\Delete.cshtml" />
     <Content Include="Views\Admin\Details.cshtml" />
     <Content Include="Views\Admin\Edit.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Customer\OrderCart.cshtml" />
     <Content Include="Scripts\umd\popper.min.js.map" />
     <Content Include="Scripts\umd\popper.js.map" />
@@ -305,8 +304,8 @@
     <Content Include="Views\Shared\Cashier_Layout.cshtml" />
     <Content Include="Views\Customer\ConfirmOrderPage.cshtml" />
     <Content Include="Views\Cashier\LoginPage.cshtml" />
-    <Content Include="Views\Cashier\CafeTable.cshtml" />
     <Content Include="Views\Shared\Default_Layout.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -333,9 +332,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CafeApp.DomainEntity\CafeApp.DomainEntity.csproj">
-      <Project>{58A2D20D-DFFB-4F3A-9A24-AB39D69FA7D0}</Project>
-      <Name>CafeApp.DomainEntity</Name>
+    <ProjectReference Include="..\CafeApp.DomainEntity1\CafeApp.DomainEntity1.csproj">
+      <Project>{1AD91E6A-35D9-47F2-8D5A-8734CF507F65}</Project>
+      <Name>CafeApp.DomainEntity1</Name>
     </ProjectReference>
     <ProjectReference Include="..\CafeApp.Persistance\CafeApp.Persistance.csproj">
       <Project>{D496F49E-46EE-4E0F-9522-1A2A9D3741F8}</Project>

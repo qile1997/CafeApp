@@ -1,4 +1,4 @@
-﻿@model CafeApp.Models.Table
+﻿@model CafeApp.DomainEntity.Table
 
 @{
     Layout = "~/Views/Shared/Customer_Layout.cshtml";
@@ -47,14 +47,7 @@
                 url: "/Customer/ConfirmOrder",
                 data: { Seat: emptyseat },
                 success: function (response) {
-                    if (response) {
-                        document.getElementById('successmessage').innerHTML = response.Msg;
-                        setTimeout(function () {
-                            window.location.href = "/Customer/Menu"
-                        }, 1000);
-                    } else {
-                        document.getElementById('successmessage').innerHTML = response.Msg;
-                    }
+                    $("#successmessage").text(Object.keys(response));
                 }
             })
         })

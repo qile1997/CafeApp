@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Web;
 
 namespace CafeApp.DomainEntity
 {
@@ -12,8 +15,8 @@ namespace CafeApp.DomainEntity
         public Category FoodCategory { get; set; }
         [DisplayName("Food Name")]
         public string FoodName { get; set; }
-        //[NotMapped]
-        //public HttpPostedFileBase Photo { get; set; }
+        [NotMapped]
+        public HttpPostedFileBase Photo { get; set; }
         public string PhotoFile { get; set; }
         [DisplayName("Price (RM)")]
         public int Price { get; set; }

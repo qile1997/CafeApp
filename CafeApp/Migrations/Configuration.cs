@@ -5,14 +5,14 @@ namespace CafeApp.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<CafeApp.Models.CafeWebApp>
+    internal sealed class Configuration : DbMigrationsConfiguration<CafeApp.Persistance.CafeWebApp>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(CafeApp.Models.CafeWebApp context)
+        protected override void Seed(Persistance.CafeWebApp context)
         {
             //  This method will be called after migrating to the latest version.
 
