@@ -11,6 +11,8 @@
     <title>@ViewBag.Title - My ASP.NET Application</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/font-awesome.css" rel="stylesheet" />
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -25,11 +27,11 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("User", "Index", "Admin")</li>
-                    <li>@Html.ActionLink("Menu", "Index", "Foods")</li>
+                    <li>@Html.ActionLink(" User", "Index", "Admin", new { area = "" }, new { @class = "fa fa-user" })</li>
+                    <li>@Html.ActionLink(" Menu", "Index", "Foods", new { area = "" }, new { @class = "fa fa-spoon" })</li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li>@Html.ActionLink("Logout", "Logout", "Admin")</li>
+                    <li>@Html.ActionLink("Logout", "Logout", "Admin", new { area = "" }, new { @class="fa fa-sign-out" })</li>
                 </ul>
             </div>
         </div>

@@ -29,14 +29,17 @@ namespace CafeApp.Controllers
                 return View();
             }
             Session["CashierId"] = user.UserRolesId;
-            return RedirectToAction("Index");
+            return RedirectToAction("Tables");
         }
         // GET: Cashier
         public ActionResult Index()
         {
             return View(tableRepo.GetTables());
         }
-
+        public ActionResult Tables()
+        {
+            return View(tableRepo.GetTables());
+        }
         // GET: Cashier/Details/5
         public ActionResult Details(int? id)
         {
@@ -106,7 +109,28 @@ namespace CafeApp.Controllers
         public ActionResult Logout()
         {
             Session.Abandon();
-            return View("LoginPage");
+            return RedirectToAction("LoginPage");
+        }
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            Table table = tableRepo.table(id);
+            if (table == null)
+            {
+                return HttpNotFound();
+            }
+            return View(table);
+        }
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            Table table = tableRepo.table(id);
+            tableRepo.DeleteTable(table);
+            return RedirectToAction("Index");
         }
     }
 }

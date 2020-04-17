@@ -6,10 +6,12 @@
 
 <h2>Order Cart</h2>
 
-<div id="successmessage" style="color:green"></div>
-<div id="failmessage" style="color:red"></div>
+<h4 id="ClearCart" style="display:inline;float:left">@Html.ActionLink("Clear Cart", "ClearCart")</h4>
 
-<h4 class="ClearCart">@Html.ActionLink("Clear Cart", "OrderCart")</h4>
+@if (ViewBag.TableStatus == "Occupied")
+{
+    <h5 id="CancelOrder" style="display:inline;float:right">@Html.ActionLink("Cancel Order", "CancelOrder", new { area = "" }, new { Style = "color:red" }) [@ViewBag.TableNo]</h5>
+}
 
 <table class="table">
     <tr>
@@ -45,16 +47,19 @@
                 </td>
             </tr>
         }
-        <tr>
-            <td style="font-weight:bold">
-                Total Amount
-            </td>
-            <td>
-            </td>
-            <td>
-                @ViewBag.FoodTotalSum
-            </td>
-        </tr>
+        if (ViewBag.Count > 0)
+        {
+            <tr>
+                <td style="font-weight:bold">
+                    Total Amount
+                </td>
+                <td>
+                </td>
+                <td>
+                    @ViewBag.FoodTotalSum
+                </td>
+            </tr>
+        }
     }
 
 
@@ -62,7 +67,14 @@
 <br />
 <hr />
 
-<h3 style="text-align:right">@Html.ActionLink("Confirm Order", "ConfirmOrderPage")</h3>
+@if (ViewBag.TableStatus != "Occupied")
+{
+    <h3 style="text-align:right">@Html.ActionLink("Confirm Order", "ConfirmOrderPage")</h3>
+}
+else
+{
+    <h3 style="text-align:right">@Html.ActionLink("Change Table", "ConfirmOrderPage")</h3>
+}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <script>
@@ -74,27 +86,22 @@
             $.ajax({
                 type: "POST",
                 url: "/Customer/Quantity",
-                data: { _operator: operation, Id: dataId },
-                success: function (response) {
-                    $("#successmessage").text(Object.value(response));
-                    RefreshPage();
-                }
+                data: { _operator: operation, Id: dataId }
             })
         })
 
-        $(".ClearCart").click(function () {
-            $.ajax({
-                type: "GET",
-                url: "/Customer/ClearCart",
-                success: function (response) {
-                    $("#successmessage").text(Object.value(response));
-                    RefreshPage();
-                }
-            })
-        })
+        //$("#ClearCart").click(function () {
+        //    $.ajax({
+        //        type: "GET",
+        //        url: "/Customer/ClearCart"
+        //    })
+        //})
 
-        function RefreshPage() {
-            setTimeout(location.reload.bind(location), 1000);
-        }
+        //$("#CancelOrder").click(function () {
+        //    $.ajax({
+        //        type: "GET",
+        //        url: "/Customer/CancelOrder"
+        //    })
+        //})
     })
 </script>

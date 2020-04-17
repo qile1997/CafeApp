@@ -18,6 +18,12 @@ namespace CafeApp.Persistance.Repositories
             Save();
         }
 
+        public void DeleteTable(Table table)
+        {
+            db.Table.Remove(table);
+            Save();
+        }
+
         public IEnumerable<Table> GetTables()
         {
             return db.Table.ToList();
@@ -37,6 +43,7 @@ namespace CafeApp.Persistance.Repositories
         public void UpdateTable(Table table)
         {
             db.Entry(table).State = EntityState.Modified;
+            db.SaveChanges();
         }
     }
 }

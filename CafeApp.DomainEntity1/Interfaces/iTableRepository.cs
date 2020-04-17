@@ -10,6 +10,7 @@ namespace CafeApp.DomainEntity.Interfaces
         Table table(int? id);
         void AddTable(Table table);
         void UpdateTable(Table table);
+        void DeleteTable(Table table);
         void Save();
     }
 }

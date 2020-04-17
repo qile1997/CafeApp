@@ -18,7 +18,6 @@ namespace CafeApp.Controllers
         [HttpPost]
         public ActionResult LoginPage(UserRoles userRoles)
         {
-
             UserRoles user = loginRepo.Login(userRoles);
             if (user == null || user.Roles != Roles.Admin)
             {
@@ -28,13 +27,12 @@ namespace CafeApp.Controllers
 
             Session["AdminId"] = user.UserRolesId;
             return RedirectToAction("Index");
-
         }
 
         public ActionResult Logout()
         {
             Session.Abandon();
-            return View("LoginPage");
+            return RedirectToAction("LoginPage");
         }
         // GET: Admin
         public ActionResult Index()

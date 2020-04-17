@@ -5,14 +5,19 @@
 }
 <h2>Menu</h2>
 <hr />
-<div id="successmessage" style="color:green"></div>
 
 <style>
     .button:hover {
         background-color: lightblue;
-        color: white
+        color: white;
     }
 </style>
+
+<div class="alert alert-success" id="successmessage" style="color:green;display:none;text-align:center"></div>
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success" style="text-align:center">@ViewBag.SuccessMessage</div>
+}
 
 @foreach (var item in Model)
 {
@@ -43,13 +48,15 @@
                 url: "/Customer/Cart",
                 data: { Id: dataId },
                 success: function (message) {
+                    document.getElementById("successmessage").style.display = "block";
                     $("#successmessage").text(Object.values(message));
                     RefreshPage();
                 }
             })
         })
-        function RefreshPage() {
-             setTimeout(location.reload.bind(location), 1000);
-        }
     })
+
+    function RefreshPage() {
+        setTimeout(location.reload.bind(location), 1000);
+    }
 </script>

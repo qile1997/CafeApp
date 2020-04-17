@@ -35,14 +35,17 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Roles)
             </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.UserRolesId }) |
-                @Html.ActionLink("Details", "Details", new { id = item.UserRolesId }) |
-                @if (Convert.ToInt32(Session["AdminId"]) != item.UserRolesId)
-                {
-                    @Html.ActionLink("Delete", "Delete", new { id = item.UserRolesId })
-                }
-            </td>
+            @if (item.Username != "admin" && item.Password != "admin")
+            {
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.UserRolesId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.UserRolesId }) |
+                    @if (Convert.ToInt32(Session["AdminId"]) != item.UserRolesId)
+                    {
+                        @Html.ActionLink("Delete", "Delete", new { id = item.UserRolesId })
+                    }
+                </td>
+            }
         </tr>
     }
 

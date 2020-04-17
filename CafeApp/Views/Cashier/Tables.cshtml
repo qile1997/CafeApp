@@ -1,21 +1,18 @@
 ﻿@model IEnumerable<CafeApp.DomainEntity.Table>
 
 @{
-    Layout = "~/Views/Shared/Customer_Layout.cshtml";
+    Layout = "~/Views/Shared/Cashier_Layout.cshtml";
 }
 
-@if (ViewBag.TableStatus == "Occupied")
-{
-    <h2>Change Table</h2>
-}
-else
-{
-    <h2>Confirm Order</h2>
-}
-
-
+<h2>Table</h2>
+<hr />
+<head>
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/font-awesome.css" rel="stylesheet" />
+</head>
 
 <style>
+
 
     .flex-container {
         float: left;
@@ -49,18 +46,6 @@ else
 
 @using (Html.BeginForm())
 {
-    @Html.AntiForgeryToken()
-
-    <div>
-        @Html.Label("Table No :")
-        @Html.DropDownList("EmptySeatsList", null, htmlAttributes: new { @class = "form-control" })
-    </div>
-
-    <div>
-        <input type="submit" value="Confirm" class="btn btn-default" />
-    </div>
-
-
     foreach (var item in Model)
     {
         if (item.TableStatus == CafeApp.DomainEntity.TableStatus.Occupied)
@@ -68,7 +53,7 @@ else
             <div class="flex-container1">
                 <dl>
                     <dt>
-                        @item.TableNo (@Html.DisplayFor(modelItem => item.UserRoles.Username))
+                        @item.TableNo (@Html.DisplayFor(modelItem=>item.UserRoles.Username))
                     </dt>
                     <dt>
                         @item.TableStatus
@@ -85,6 +70,9 @@ else
                     </dt>
                     <dt>
                         @item.TableStatus
+                    </dt>
+                    <dt class="fas fa-utensils">
+
                     </dt>
                 </dl>
             </div>

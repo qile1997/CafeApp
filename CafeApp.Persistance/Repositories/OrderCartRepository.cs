@@ -12,6 +12,8 @@ namespace CafeApp.Persistance.Repositories
     public class OrderCartRepository : iOrderCartRepository
     {
         CafeWebApp db = new CafeWebApp();
+        TableRepository tableRepo = new TableRepository();
+        FoodRepository foodRepo = new FoodRepository();
         public void AddCart(OrderCart cart)
         {
             db.OrderCart.Add(cart);
@@ -53,7 +55,7 @@ namespace CafeApp.Persistance.Repositories
             }
         }
 
-        public string CartQuantity(int Id, string _operator)
+        public void CartQuantity(int Id, string _operator)
         {
             var filterCart = db.OrderCart.Where(d => d.FoodsId == Id).SingleOrDefault();
             var filterFood = FilterFood(Id);
@@ -62,12 +64,12 @@ namespace CafeApp.Persistance.Repositories
                 filterCart.FoodQuantity++;
                 filterCart.TotalAmount = filterFood.Price * filterCart.FoodQuantity;
                 Save();
-                return "Quantity Updated";
+                return;
             }
             else if (_operator == "x")
             {
                 RemoveCart(filterCart);
-                return "Food Removed";
+                return;
             }
             else
             {
@@ -77,49 +79,64 @@ namespace CafeApp.Persistance.Repositories
                     if (filterCart.FoodQuantity == 0)
                     {
                         RemoveCart(filterCart);
-                        return "Food Removed";
+                        return;
                     }
                     filterCart.TotalAmount = filterFood.Price * filterCart.FoodQuantity;
                     Save();
-                    return "Quantity Deleted";
+                    return;
                 }
             }
-            return "";
         }
 
-        public string ClearCart()
+        public void ClearCart()
         {
             foreach (var item in db.OrderCart)
             {
                 db.OrderCart.Remove(item);
             }
             Save();
-            return "Cart cleared succesfully";
+        }
+        public void CancelOrder(int checkId)
+        {
+            var checkSeat = tableRepo.table(checkId);
+            checkSeat.TableStatus = TableStatus.Empty;
+            checkSeat.UserRolesId = null;
+            tableRepo.Save();
         }
 
         public string ConfirmOrder(int checkId, int Seat)
         {
-            var checkSeat = db.Table.Where(d => d.UserRolesId == checkId).SingleOrDefault();
+            var user = db.UserRoles.Where(d => d.UserRolesId == checkId).SingleOrDefault();
+            var checkCurrentSeat = tableRepo.table(checkId);
             var replaceSeat = db.Table.Where(d => d.TableId == Seat).SingleOrDefault();
             var filterfood = OrderedFood(checkId);
 
             if (filterfood.Count() < 1)
             {
-                return "No food in order cart. Cannot confirm order";
+                return user.Username + " , you have no food in order cart. Cannot confirm order";
             }
             else
             {
-                if (checkSeat != null)
+                if (checkCurrentSeat.TableStatus == TableStatus.Occupied)
                 {
-                    return "Your order is already confirmed, your table seat is ";
+                    checkCurrentSeat.TableStatus = TableStatus.Empty;
+                    checkCurrentSeat.UserRolesId = null;
+                    replaceSeat.UserRolesId = checkId;
+                    replaceSeat.TableStatus = TableStatus.Occupied;
+                    Save();
+                    return user.Username + " , your seat has changed from " + checkCurrentSeat.TableNo + " to " + replaceSeat.TableNo;
                 }
 
                 replaceSeat.UserRolesId = checkId;
                 replaceSeat.TableStatus = TableStatus.Occupied;
                 Save();
 
-                return "Order confirmed, your table seat is " + replaceSeat.TableNo;
+                return user.Username + " , your order is confirmed , your table seat is " + replaceSeat.TableNo;
             }
+        }
+        public Table CheckSeat(int checkId)
+        {
+            return db.Table.Where(d => d.UserRolesId == checkId).SingleOrDefault();
         }
 
         public Foods FilterFood(int Id)

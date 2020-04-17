@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "~/Views/Shared/Customer_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    <br />
+    if (ViewBag.SuccessMessage != null)
+    {
+        <div class="form-group">
+            <div class="alert alert-success" style="text-align:center">
+                <div>@ViewBag.SuccessMessage</div>
+            </div>
+        </div>
+    }
+}
+
+<script>
+    setInterval(function () {
+        window.location.href = "/Customer/Menu";
+    }, 5000);
+</script>

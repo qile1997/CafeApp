@@ -13,12 +13,14 @@ namespace CafeApp.DomainEntity.Interfaces
         void UpdateCart(OrderCart cart);
         void RemoveCart(OrderCart cart);
         void Save();
+        void CancelOrder(int id);
         int FoodCount(int id);
         int FoodPriceSum(int id);
-        string CartQuantity(int id, string _operator);
+        void CartQuantity(int id, string _operator);
         string Cart(int id,int checkId);
         string ConfirmOrder(int id,int Seat);
-        string ClearCart();
+        Table CheckSeat(int id);
+        void ClearCart();
         Foods FilterFood(int id);
         IEnumerable<OrderCart> OrderedFood(int id);
     }

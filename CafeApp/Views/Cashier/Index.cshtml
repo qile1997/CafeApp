@@ -5,7 +5,6 @@
 }
 
 <h2>Index</h2>
-
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
@@ -19,21 +18,38 @@
         </th>
         <th></th>
     </tr>
-
     @foreach (var item in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TableNo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TableStatus)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.TableId }) |
-                @Html.ActionLink("Details", "Details", new { id = item.TableId }) 
-            </td>
-        </tr>
+        if (item.TableId < 12)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TableNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TableStatus)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.TableId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.TableId })
+                </td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TableNo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TableStatus)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.TableId }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.TableId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.TableId })
+                </td>
+            </tr>
+        }
     }
-
 </table>
