@@ -55,6 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\FoodRepository.cs" />
     <Compile Include="Repositories\LoginRepository.cs" />
+    <Compile Include="Repositories\MethodRepository.cs" />
     <Compile Include="Repositories\OrderCartRepository.cs" />
     <Compile Include="Repositories\TableRepository.cs" />
     <Compile Include="Repositories\UserRolesRepository.cs" />

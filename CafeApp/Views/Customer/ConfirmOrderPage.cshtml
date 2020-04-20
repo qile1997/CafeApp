@@ -63,12 +63,12 @@ else
 
     foreach (var item in Model)
     {
-        if (item.TableStatus == CafeApp.DomainEntity.TableStatus.Occupied)
+        if (item.TableStatus == CafeApp.DomainEntity.TableStatus.Empty)
         {
-            <div class="flex-container1">
+            <div class="flex-container">
                 <dl>
                     <dt>
-                        @item.TableNo (@Html.DisplayFor(modelItem => item.UserRoles.Username))
+                        @item.TableNo
                     </dt>
                     <dt>
                         @item.TableStatus
@@ -78,10 +78,10 @@ else
         }
         else
         {
-            <div class="flex-container">
+            <div class="flex-container1">
                 <dl>
                     <dt>
-                        @item.TableNo
+                        @item.TableNo (@Html.DisplayFor(modelItem => item.UserRoles.Username))
                     </dt>
                     <dt>
                         @item.TableStatus

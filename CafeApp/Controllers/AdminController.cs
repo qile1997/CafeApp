@@ -140,6 +140,15 @@ namespace CafeApp.Controllers
         {
             UserRoles userRoles = userRepo.userRoles(id);
             userRepo.DeleteUserRoles(userRoles);
+            if (userRoles.Roles == Roles.Cashier)
+            {
+               int Count = userRepo.FilterCashier();
+                if (Count < 1)
+                {
+                    TableRepository tableRepo = new TableRepository();
+                    tableRepo.DeleteAllTable();
+                }
+            }
             return RedirectToAction("Index");
         }
     }

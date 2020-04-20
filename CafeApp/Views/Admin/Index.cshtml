@@ -25,28 +25,34 @@
 
     @foreach (var item in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Username)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Password)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Roles)
-            </td>
-            @if (item.Username != "admin" && item.Password != "admin")
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.Username)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Password)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Roles)
+    </td>
+    @if (item.Username == "admin" && item.Password == "admin" && item.Roles == CafeApp.DomainEntity.Roles.Admin)
+    {
+        <td>
+ 
+        </td>
+    }
+    else
+    {
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id = item.UserRolesId }) |
+            @Html.ActionLink("Details", "Details", new { id = item.UserRolesId }) |
+            @if (Convert.ToInt32(Session["AdminId"]) != item.UserRolesId)
             {
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.UserRolesId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.UserRolesId }) |
-                    @if (Convert.ToInt32(Session["AdminId"]) != item.UserRolesId)
-                    {
-                        @Html.ActionLink("Delete", "Delete", new { id = item.UserRolesId })
-                    }
-                </td>
+                @Html.ActionLink("Delete", "Delete", new { id = item.UserRolesId })
             }
-        </tr>
+        </td>
+    }
+</tr>
     }
 
 </table>

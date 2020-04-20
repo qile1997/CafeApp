@@ -7,6 +7,7 @@ namespace CafeApp.DomainEntity.Interfaces
     public interface iUserRolesRepository
     {
         IEnumerable<UserRoles> GetUserRoles();
+        int FilterCashier();
         UserRoles userRoles(int? id);
         void AddUserRoles(UserRoles userRoles);
         void UpdateUserRoles(UserRoles userRoles);
@@ -15,7 +16,6 @@ namespace CafeApp.DomainEntity.Interfaces
         void CreateTables(UserRoles userRoles);
         bool CheckEditDuplicateUser(UserRoles userRoles);
         bool CheckDuplicateUser(UserRoles userRoles);
-        UserRoles Login(UserRoles userRoles);
         void CreateAdmin();
     }
 }

@@ -20,7 +20,7 @@ namespace CafeApp.Persistance.Repositories
 
         public void CreateTables(UserRoles userRoles)
         {
-            var filterTable = db.Table.Where(d => d.TableId < 1).ToList();
+            var filterTable = db.Table.ToList();
 
             if (userRoles.Roles == Roles.Cashier && filterTable.Count < 1)
             {
@@ -92,17 +92,12 @@ namespace CafeApp.Persistance.Repositories
             }
             return false;
         }
-
-        public UserRoles Login(UserRoles userRoles)
-        {
-            return db.UserRoles.Where(d => d.Username == userRoles.Username && d.Password == userRoles.Password && d.Roles == Roles.Admin).SingleOrDefault(); ;
-        }
-
+        //When you initialize data without any users
         public void CreateAdmin()
         {
-            var createAdminfilter = db.UserRoles.Where(d => d.UserRolesId > 1).ToList();
+            var createAdminfilter = GetUserRoles().Count();
 
-            if (createAdminfilter.Count < 1)
+            if (createAdminfilter < 1)
             {
                 UserRoles user = new UserRoles();
                 user.Username = "admin";
@@ -111,6 +106,12 @@ namespace CafeApp.Persistance.Repositories
                 db.UserRoles.Add(user);
                 Save();
             }
+        }
+
+        public int FilterCashier()
+        {
+            var Count = db.UserRoles.Where(d => d.Roles == Roles.Cashier).ToList();
+            return Count.Count();
         }
     }
 }

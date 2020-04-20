@@ -49,6 +49,7 @@
     <Compile Include="Interfaces\iOrderCartRepository.cs" />
     <Compile Include="Interfaces\iTableRepository.cs" />
     <Compile Include="Interfaces\iUserRolesRepository.cs" />
+    <Compile Include="Interfaces\iMethodRepository.cs" />
     <Compile Include="OrderCart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Table.cs" />

@@ -16,6 +16,7 @@ namespace CafeApp.Controllers
         private LoginRepository loginRepo = new LoginRepository();
         private OrderCartRepository orderRepo = new OrderCartRepository();
         private TableRepository tableRepo = new TableRepository();
+        private UserRolesRepository userRepo = new UserRolesRepository();
         public ActionResult LoginPage()
         {
             return View();
@@ -24,13 +25,20 @@ namespace CafeApp.Controllers
         public ActionResult LoginPage(UserRoles userRoles)
         {
             UserRoles user = loginRepo.Login(userRoles);
+            int Count = userRepo.FilterCashier();
+                                                                    
+            if (Count < 1)
+            {
+                ViewBag.FailMessage = "Sorry , cashier is unavailable . You cannot login .";
+                return View();
+            }
 
             if (user == null || user.Roles != Roles.Customer)
             {
                 ViewBag.FailMessage = "Your username / password is invalid";
                 return View();
             }
-
+                                                                                                                                                                        
             Session["CustomerId"] = user.UserRolesId;
             return RedirectToAction("Menu");
         }
@@ -41,32 +49,46 @@ namespace CafeApp.Controllers
         }
         public ActionResult Menu()
         {
-            int checkId = SessionID();
-            ViewBag.Count = orderRepo.FoodCount(checkId);
+            int SessionId = SessionID();
+            var TableData = orderRepo.CheckSeat(SessionId);
+            if (TableData != null)
+            {
+                ViewBag.TableNo = TableData.TableNo;
+            }
+            else
+            {
+                ViewBag.TableNo = "Empty";
+            }
+            ViewBag.Username = userRepo.userRoles(SessionId).Username.ToString();
+            ViewBag.Count = orderRepo.FoodCount(SessionId);
             return View(foodRepo.GetFoods());
         }
         public int SessionID()
         {
-            int checkId = Convert.ToInt32(Session["CustomerId"]);
-            return checkId;
+            int SessionId = Convert.ToInt32(Session["CustomerId"]);
+            return SessionId;
         }
         [HttpPost]
         public ActionResult Cart(int Id)
         {
-            int checkId = SessionID();
-            string message = orderRepo.Cart(Id, checkId);
+            int SessionId = SessionID();
+            string message = orderRepo.Cart(Id, SessionId);
 
             return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
         public ActionResult OrderCart()
         {
-            int checkId = SessionID();
+            int SessionId = SessionID();
 
-            ViewBag.Count = orderRepo.FoodCount(checkId);
-            ViewBag.FoodTotalSum = orderRepo.FoodPriceSum(checkId);
-            ViewBag.TableStatus = tableRepo.table(checkId).TableStatus.ToString();
-            ViewBag.TableNo = tableRepo.table(checkId).TableNo;
-            return View(orderRepo.OrderedFood(checkId));
+            ViewBag.Count = orderRepo.FoodCount(SessionId);
+            ViewBag.FoodTotalSum = orderRepo.FoodPriceSum(SessionId);
+            var TableData = orderRepo.CheckSeat(SessionId);
+            if (TableData != null)
+            {
+                ViewBag.TableStatus = TableData.TableStatus.ToString();
+                ViewBag.TableNo = TableData.TableNo;
+            }      
+            return View(orderRepo.OrderedFood(SessionId));
         }
         [HttpPost]
         public ActionResult Quantity(string _operator, int Id)
@@ -76,34 +98,38 @@ namespace CafeApp.Controllers
         }
         public ActionResult ClearCart()
         {
-            orderRepo.ClearCart();
+            int SessionId = SessionID();
+            orderRepo.ClearCart(SessionId);
             return RedirectToAction("OrderCart");
         }
         public ActionResult CancelOrder()
         {
-            int checkId = SessionID();
-            orderRepo.ClearCart();
-            orderRepo.CancelOrder(checkId);
+            int SessionId = SessionID();
+            orderRepo.CancelOrder(SessionId);
             return RedirectToAction("OrderCart");
         }
         public ActionResult ConfirmOrderPage()
         {
-            int checkId = SessionID();
-            ViewBag.Count = orderRepo.FoodCount(checkId);
+            int SessionId = SessionID();
+            ViewBag.Count = orderRepo.FoodCount(SessionId);
             var emptyseat = orderRepo.GetEmptyTables();
             ViewBag.EmptySeatsList = new SelectList(emptyseat, "TableId", "TableNo");
             var tableData = tableRepo.GetTables();
-            ViewBag.TableStatus = tableRepo.table(checkId).TableStatus.ToString();
+            var TableStatus = orderRepo.CheckSeat(SessionId);
+            if (TableStatus != null)
+            {
+                ViewBag.TableStatus = TableStatus.TableStatus.ToString();
+            }
             return View(tableData);
         }
         [HttpPost]
         public ActionResult ConfirmOrderPage(int EmptySeatsList)
         {
-            int checkId = SessionID();
-            ViewBag.Count = orderRepo.FoodCount(checkId);
+            int SessionId = SessionID();
+            ViewBag.Count = orderRepo.FoodCount(SessionId);
             var emptyseat = orderRepo.GetEmptyTables();
             ViewBag.EmptySeatsList = new SelectList(emptyseat, "TableId", "TableNo");
-            ViewBag.SuccessMessage = orderRepo.ConfirmOrder(checkId, EmptySeatsList);
+            ViewBag.SuccessMessage = orderRepo.ConfirmOrder(SessionId, EmptySeatsList);
             return View("ConfirmOrderSuccess");
         }
         // GET: Customer
@@ -203,6 +229,5 @@ namespace CafeApp.Controllers
             foodRepo.DeleteFood(foods);
             return RedirectToAction("Index");
         }
-
     }
 }

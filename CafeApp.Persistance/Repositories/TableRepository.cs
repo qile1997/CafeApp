@@ -18,6 +18,13 @@ namespace CafeApp.Persistance.Repositories
             Save();
         }
 
+        public void DeleteAllTable()
+        {
+            var AllTables = GetTables();
+            db.Table.RemoveRange(AllTables);
+            Save();
+        }
+
         public void DeleteTable(Table table)
         {
             db.Table.Remove(table);

@@ -19,9 +19,9 @@ namespace CafeApp.DomainEntity.Interfaces
         void CartQuantity(int id, string _operator);
         string Cart(int id,int checkId);
         string ConfirmOrder(int id,int Seat);
-        Table CheckSeat(int id);
-        void ClearCart();
-        Foods FilterFood(int id);
+        void ClearCart(int SessionId);
+        Foods FilterFood(int SessionId);
+        Table CheckSeat(int SessionId);
         IEnumerable<OrderCart> OrderedFood(int id);
     }
 }

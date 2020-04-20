@@ -12,8 +12,6 @@ namespace CafeApp.Persistance.Repositories
     public class OrderCartRepository : iOrderCartRepository
     {
         CafeWebApp db = new CafeWebApp();
-        TableRepository tableRepo = new TableRepository();
-        FoodRepository foodRepo = new FoodRepository();
         public void AddCart(OrderCart cart)
         {
             db.OrderCart.Add(cart);
@@ -26,13 +24,13 @@ namespace CafeApp.Persistance.Repositories
             return cart;
         }
 
-        public string Cart(int Id, int checkId)
+        public string Cart(int Id, int SessionId)
         {
             //var checkId = Convert.ToInt32(Session["CustomerId"]);
             OrderCart cart = new OrderCart();
 
             //Filter cart/food ordered that belongs to the customerID
-            var filterCart = db.OrderCart.Where(d => d.FoodsId == Id && d.UserRolesId == checkId).SingleOrDefault();
+            var filterCart = db.OrderCart.Where(d => d.FoodsId == Id && d.UserRolesId == SessionId).SingleOrDefault();
             //Filter food that belongs to the customerID
             var filterFood = FilterFood(Id);
 
@@ -41,24 +39,24 @@ namespace CafeApp.Persistance.Repositories
                 filterCart.FoodQuantity++;
                 filterCart.TotalAmount = filterFood.Price * filterCart.FoodQuantity;
                 Save();
-                return filterFood.FoodName + " added into quantity order";
+                return filterFood.FoodName + " added into quantity .";
             }
             else
             {
                 cart.FoodsId = Id;
                 cart.TotalAmount = filterFood.Price;
                 cart.FoodQuantity = 1;
-                cart.UserRolesId = checkId;
+                cart.UserRolesId = SessionId;
 
                 AddCart(cart);
-                return filterFood.FoodName + " added into order";
+                return filterFood.FoodName + " added into order .";
             }
         }
 
-        public void CartQuantity(int Id, string _operator)
+        public void CartQuantity(int FoodsId, string _operator)
         {
-            var filterCart = db.OrderCart.Where(d => d.FoodsId == Id).SingleOrDefault();
-            var filterFood = FilterFood(Id);
+            var filterCart = db.OrderCart.Where(d => d.FoodsId == FoodsId).SingleOrDefault();
+            var filterFood = FilterFood(FoodsId);
             if (_operator == "+")
             {
                 filterCart.FoodQuantity++;
@@ -87,66 +85,65 @@ namespace CafeApp.Persistance.Repositories
                 }
             }
         }
-
-        public void ClearCart()
+        public Foods FilterFood(int Id)
         {
-            foreach (var item in db.OrderCart)
+            return db.Foods.Where(d => d.FoodsId == Id).SingleOrDefault();
+        }
+
+        public void ClearCart(int SessionId)
+        {
+            var orderedFood = OrderedFood(SessionId);
+            foreach (var item in orderedFood)
             {
                 db.OrderCart.Remove(item);
             }
             Save();
         }
-        public void CancelOrder(int checkId)
+        public void CancelOrder(int SessionId)
         {
-            var checkSeat = tableRepo.table(checkId);
+            var checkSeat = CheckSeat(SessionId);
             checkSeat.TableStatus = TableStatus.Empty;
             checkSeat.UserRolesId = null;
-            tableRepo.Save();
+            Save();
         }
 
-        public string ConfirmOrder(int checkId, int Seat)
+        public string ConfirmOrder(int SessionId, int Seat)
         {
-            var user = db.UserRoles.Where(d => d.UserRolesId == checkId).SingleOrDefault();
-            var checkCurrentSeat = tableRepo.table(checkId);
+            var user = db.UserRoles.Where(d => d.UserRolesId == SessionId).SingleOrDefault();
+            var checkCurrentSeat = CheckSeat(SessionId);
             var replaceSeat = db.Table.Where(d => d.TableId == Seat).SingleOrDefault();
-            var filterfood = OrderedFood(checkId);
+            var filterfood = OrderedFood(SessionId);
 
             if (filterfood.Count() < 1)
             {
-                return user.Username + " , you have no food in order cart. Cannot confirm order";
+                return user.Username + " , you have no food in order cart.";
             }
             else
             {
-                if (checkCurrentSeat.TableStatus == TableStatus.Occupied)
+                if (checkCurrentSeat != null)
                 {
-                    checkCurrentSeat.TableStatus = TableStatus.Empty;
-                    checkCurrentSeat.UserRolesId = null;
-                    replaceSeat.UserRolesId = checkId;
-                    replaceSeat.TableStatus = TableStatus.Occupied;
-                    Save();
-                    return user.Username + " , your seat has changed from " + checkCurrentSeat.TableNo + " to " + replaceSeat.TableNo;
+                    if (checkCurrentSeat.TableStatus == TableStatus.Occupied)
+                    {
+                        checkCurrentSeat.TableStatus = TableStatus.Empty;
+                        checkCurrentSeat.UserRolesId = null;
+                        replaceSeat.UserRolesId = SessionId;
+                        replaceSeat.TableStatus = TableStatus.Occupied;
+                        Save();
+                        return user.Username + " , your seat has changed from " + checkCurrentSeat.TableNo + " to " + replaceSeat.TableNo;
+                    }
                 }
 
-                replaceSeat.UserRolesId = checkId;
+                replaceSeat.UserRolesId = SessionId;
                 replaceSeat.TableStatus = TableStatus.Occupied;
                 Save();
 
                 return user.Username + " , your order is confirmed , your table seat is " + replaceSeat.TableNo;
             }
         }
-        public Table CheckSeat(int checkId)
-        {
-            return db.Table.Where(d => d.UserRolesId == checkId).SingleOrDefault();
-        }
 
-        public Foods FilterFood(int Id)
+        public int FoodCount(int SessionId)
         {
-            return db.Foods.Where(d => d.FoodsId == Id).SingleOrDefault();
-        }
-
-        public int FoodCount(int checkId)
-        {
-            var filterCount = OrderedFood(checkId);
+            var filterCount = OrderedFood(SessionId);
             int Count = 0;
 
             foreach (var item in filterCount)
@@ -156,9 +153,9 @@ namespace CafeApp.Persistance.Repositories
             return Count;
         }
 
-        public int FoodPriceSum(int checkId)
+        public int FoodPriceSum(int SessionId)
         {
-            var filterCount = OrderedFood(checkId);
+            var filterCount = OrderedFood(SessionId);
             int TotalAmount = 0;
             foreach (var item in filterCount)
             {
@@ -177,9 +174,9 @@ namespace CafeApp.Persistance.Repositories
             return db.OrderCart.ToList();
         }
 
-        public IEnumerable<OrderCart> OrderedFood(int checkId)
+        public IEnumerable<OrderCart> OrderedFood(int SessionId)
         {
-            return db.OrderCart.Where(d => d.UserRolesId == checkId).ToList();
+            return db.OrderCart.Where(d => d.UserRolesId == SessionId).ToList();
         }
 
         public void RemoveCart(OrderCart cart)
@@ -197,5 +194,12 @@ namespace CafeApp.Persistance.Repositories
         {
             db.Entry(cart).State = EntityState.Modified;
         }
+
+        public Table CheckSeat(int SessionId)
+        {
+            var tableData = db.Table.Where(d => d.UserRolesId == SessionId).SingleOrDefault();
+            return tableData;
+        }
+
     }
 }
