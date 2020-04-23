@@ -24,7 +24,7 @@ namespace CafeApp.DomainEntity
     }
     public enum Category
     {
-        Rice, Noodles, Egg
+        Rice, Noodles, Drinks
     }
 
 }

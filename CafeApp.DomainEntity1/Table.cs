@@ -9,7 +9,7 @@ namespace CafeApp.DomainEntity
     public class Table
     {
         public int TableId { get; set; }
-        public string TableNo { get; set; }
+        public int TableNo { get; set; }
         [ForeignKey("UserRoles")]
         public int? UserRolesId { get; set; }
         public virtual UserRoles UserRoles { get; set; }

@@ -4,10 +4,19 @@
     Layout = "~/Views/Shared/Cashier_Layout.cshtml";
 }
 
-<h2>Index</h2>
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+@*@if (ViewBag.Message != null)
+    {
+        <div class="alert alert-danger" style="text-align:center">@ViewBag.Message</div>
+    }*@
+
+<h2>Manage Tables</h2>
+<p style="float:left">@Html.ActionLink("Create New", "Create")</p>
+
+@if (ViewBag.Message == null)
+{
+    <h5 style="display:inline;float:right" onclick="RefreshPage()"><a href="@Url.Action("ReorderTables","Cashier")" id="btn">Re-order Tables</a></h5>
+}
+
 <table class="table">
     <tr>
         <th>
@@ -16,22 +25,31 @@
         <th>
             @Html.DisplayNameFor(model => model.TableStatus)
         </th>
-        <th></th>
+        <th>
+            Remove
+        </th>
     </tr>
     @foreach (var item in Model)
     {
-        if (item.TableId < 12)
+        if (item.TableNo == 1 || item.TableNo == 2 || item.TableNo == 3 || item.TableNo == 4 || item.TableNo == 5 || item.TableNo == 6 || item.TableNo == 7 || item.TableNo == 8 || item.TableNo == 9 || item.TableNo == 10)
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TableNo)
+                    T[@Html.DisplayFor(modelItem => item.TableNo)]
                 </td>
+                @if (item.TableStatus == CafeApp.DomainEntity.TableStatus.Occupied)
+                {
+                    <td>
+                        <p><a href="@Url.Action("ChangeStatus","Cashier",new {id=item.TableId,SessionId=item.UserRolesId})">@item.TableStatus</a></p>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <p>Empty</p>
+                    </td>
+                }
                 <td>
-                    @Html.DisplayFor(modelItem => item.TableStatus)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.TableId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.TableId })
                 </td>
             </tr>
         }
@@ -39,17 +57,37 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.TableNo)
+                    T[@Html.DisplayFor(modelItem => item.TableNo)]
                 </td>
+                @if (item.TableStatus == CafeApp.DomainEntity.TableStatus.Occupied)
+                {
+                    <td>
+                        <p><a href="@Url.Action("ChangeStatus","Cashier",new {id=item.TableId,SessionId=item.UserRolesId})">@item.TableStatus</a></p>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <p>Empty</p>
+                    </td>
+                }
                 <td>
-                    @Html.DisplayFor(modelItem => item.TableStatus)
-                </td>
-                <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.TableId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.TableId }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.TableId })
+                    @if (item.TableStatus == CafeApp.DomainEntity.TableStatus.Empty)
+                    {
+                        @Html.ActionLink("x", "Delete", new { id = item.TableId }, htmlAttributes: new { @class = "operator btn btn-danger btn-xs", @style = "font-size:xx-small" })
+                    }
                 </td>
             </tr>
         }
     }
 </table>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    //$(document).ready(function () {
+    //    $("#btn").click(function () {
+    //        var btn = $("#btn").val();
+    //        console.log('1');
+    //        $("#btn").removeAttr("a");
+    //    })
+    //})
+</script>

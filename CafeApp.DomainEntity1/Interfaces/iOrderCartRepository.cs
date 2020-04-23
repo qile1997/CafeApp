@@ -16,7 +16,7 @@ namespace CafeApp.DomainEntity.Interfaces
         void CancelOrder(int id);
         int FoodCount(int id);
         int FoodPriceSum(int id);
-        void CartQuantity(int id, string _operator);
+        void CartQuantity(int id, string _operator,int SessionId);
         string Cart(int id,int checkId);
         string ConfirmOrder(int id,int Seat);
         void ClearCart(int SessionId);

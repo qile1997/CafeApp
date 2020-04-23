@@ -6,11 +6,11 @@
 
 <h2>Order Cart</h2>
 
-<h4 id="ClearCart" style="display:inline;float:left">@Html.ActionLink("Clear Cart", "ClearCart")</h4>
+<h4 style="display:inline;float:left">@Html.ActionLink("Clear Cart", "ClearCart")</h4>
 
 @if (ViewBag.TableStatus == "Occupied")
 {
-    <h5 id="CancelOrder" style="display:inline;float:right">@Html.ActionLink("Cancel Order", "CancelOrder", new { area = "" }, new { Style = "color:red" }) [@ViewBag.TableNo]</h5>
+    <h5 style="display:inline;float:right">@Html.ActionLink("Cancel Order", "CancelOrder", new { area = "" }, new { Style = "color:red" }) [@ViewBag.TableNo]</h5>
 }
 
 <table class="table">
@@ -66,15 +66,18 @@
 </table>
 <br />
 <hr />
+@if (ViewBag.Count > 0)
+{
+    if (ViewBag.TableStatus != "Occupied")
+    {
+        <h3 style="text-align:right">@Html.ActionLink("Confirm Order", "ConfirmOrderPage")</h3>
+    }
+    else
+    {
+        <h3 style="text-align:right">@Html.ActionLink("Change Table", "ConfirmOrderPage")</h3>
+    }
+}
 
-@if (ViewBag.TableStatus != "Occupied")
-{
-    <h3 style="text-align:right">@Html.ActionLink("Confirm Order", "ConfirmOrderPage")</h3>
-}
-else
-{
-    <h3 style="text-align:right">@Html.ActionLink("Change Table", "ConfirmOrderPage")</h3>
-}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 <script>
@@ -86,7 +89,10 @@ else
             $.ajax({
                 type: "POST",
                 url: "/Customer/Quantity",
-                data: { _operator: operation, Id: dataId }
+                data: { _operator: operation, Id: dataId },
+                success: function () {
+                    location.reload();
+                }
             })
         })
     })

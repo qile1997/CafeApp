@@ -65,8 +65,7 @@ namespace CafeApp.Controllers
         }
         public int SessionID()
         {
-            int SessionId = Convert.ToInt32(Session["CustomerId"]);
-            return SessionId;
+            return Convert.ToInt32(Session["CustomerId"]);
         }
         [HttpPost]
         public ActionResult Cart(int Id)
@@ -93,7 +92,8 @@ namespace CafeApp.Controllers
         [HttpPost]
         public ActionResult Quantity(string _operator, int Id)
         {
-            orderRepo.CartQuantity(Id, _operator);
+            int SessionId = SessionID();
+            orderRepo.CartQuantity(Id, _operator, SessionId);
             return Json(JsonRequestBehavior.AllowGet);
         }
         public ActionResult ClearCart()

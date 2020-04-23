@@ -6,12 +6,14 @@ using System.Net;
 using System.Web.Mvc;
 using CafeApp.Persistance.Repositories;
 using CafeApp.DomainEntity;
+using CafeApp.Persistance;
+using System.Collections.Generic;
 
 namespace CafeApp.Controllers
 {
     public class CashierController : Controller
     {
-        //private CafeWebApp db = new CafeWebApp();
+        private CafeWebApp db = new CafeWebApp();
         private LoginRepository loginRepo = new LoginRepository();
         private TableRepository tableRepo = new TableRepository();
         public ActionResult LoginPage()
@@ -34,77 +36,24 @@ namespace CafeApp.Controllers
         // GET: Cashier
         public ActionResult Index()
         {
+            bool check = tableRepo.GetTableStatus();
+            if (check)
+            {
+                ViewBag.Message = "";
+                return View(tableRepo.GetTables());
+            }
             return View(tableRepo.GetTables());
         }
         public ActionResult Tables()
         {
             return View(tableRepo.GetTables());
         }
-        // GET: Cashier/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Table table = tableRepo.table(id);
-            if (table == null)
-            {
-                return HttpNotFound();
-            }
-            return View(table);
-        }
 
         // GET: Cashier/Create
         public ActionResult Create()
         {
-            return View();
-        }
-
-        // POST: Cashier/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "TableId,TableNo,TableStatus")] Table table)
-        {
-            if (ModelState.IsValid)
-            {
-                tableRepo.AddTable(table);
-                return RedirectToAction("Index");
-            }
-
-            return View(table);
-        }
-
-        // GET: Cashier/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Table table = tableRepo.table(id);
-            if (table == null)
-            {
-                return HttpNotFound();
-            }
-            return View(table);
-        }
-
-        // POST: Cashier/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "TableId,TableNo,TableStatus")] Table table)
-        {
-            if (ModelState.IsValid)
-            {
-                tableRepo.UpdateTable(table);
-                return RedirectToAction("Index");
-            }
-            return View(table);
+            tableRepo.CreateTable();
+            return RedirectToAction("Index");
         }
         public ActionResult Logout()
         {
@@ -113,23 +62,26 @@ namespace CafeApp.Controllers
         }
         public ActionResult Delete(int? id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Table table = tableRepo.table(id);
-            if (table == null)
-            {
-                return HttpNotFound();
-            }
-            return View(table);
-        }
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
             Table table = tableRepo.table(id);
             tableRepo.DeleteTable(table);
+
+            return RedirectToAction("Index");
+        }
+        public ActionResult ChangeStatus(int id, int SessionId)
+        {
+            Table table = tableRepo.table(id);
+            tableRepo.ChangeStatus(table, SessionId);
+            return RedirectToAction("Index");
+        }
+        public ActionResult ReorderTables()
+        {
+            //bool check = tableRepo.GetTableStatus();
+            //if (check)
+            //{
+            //    ViewBag.Message = "Customers still eating . Cant re-order tables now.";
+            //    return RedirectToAction("Index");
+            //}
+            tableRepo.ReorderTables();
             return RedirectToAction("Index");
         }
     }

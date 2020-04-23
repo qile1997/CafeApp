@@ -22,13 +22,13 @@ namespace CafeApp.Persistance.Repositories
         {
             var filterTable = db.Table.ToList();
 
-            if (userRoles.Roles == Roles.Cashier && filterTable.Count < 1)
+            if (userRoles.Roles == Roles.Cashier && filterTable.Count < 10)
             {
                 for (int i = 1; i <= 10; i++)
                 {
                     Table table = new Table();
                     table.TableId = i;
-                    table.TableNo = "T" + i;
+                    table.TableNo =  i;
                     table.TableStatus = TableStatus.Empty;
                     table.UserRolesId = null;
                     db.Table.Add(table);

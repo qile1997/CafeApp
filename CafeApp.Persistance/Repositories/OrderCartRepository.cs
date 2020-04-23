@@ -53,9 +53,9 @@ namespace CafeApp.Persistance.Repositories
             }
         }
 
-        public void CartQuantity(int FoodsId, string _operator)
+        public void CartQuantity(int FoodsId, string _operator, int SessionId)
         {
-            var filterCart = db.OrderCart.Where(d => d.FoodsId == FoodsId).SingleOrDefault();
+            var filterCart = db.OrderCart.Where(d => d.FoodsId == FoodsId && d.UserRolesId == SessionId).SingleOrDefault();
             var filterFood = FilterFood(FoodsId);
             if (_operator == "+")
             {
@@ -101,6 +101,7 @@ namespace CafeApp.Persistance.Repositories
         }
         public void CancelOrder(int SessionId)
         {
+            ClearCart(SessionId);
             var checkSeat = CheckSeat(SessionId);
             checkSeat.TableStatus = TableStatus.Empty;
             checkSeat.UserRolesId = null;
@@ -114,31 +115,25 @@ namespace CafeApp.Persistance.Repositories
             var replaceSeat = db.Table.Where(d => d.TableId == Seat).SingleOrDefault();
             var filterfood = OrderedFood(SessionId);
 
-            if (filterfood.Count() < 1)
+            if (checkCurrentSeat != null)
             {
-                return user.Username + " , you have no food in order cart.";
-            }
-            else
-            {
-                if (checkCurrentSeat != null)
+                if (checkCurrentSeat.TableStatus == TableStatus.Occupied)
                 {
-                    if (checkCurrentSeat.TableStatus == TableStatus.Occupied)
-                    {
-                        checkCurrentSeat.TableStatus = TableStatus.Empty;
-                        checkCurrentSeat.UserRolesId = null;
-                        replaceSeat.UserRolesId = SessionId;
-                        replaceSeat.TableStatus = TableStatus.Occupied;
-                        Save();
-                        return user.Username + " , your seat has changed from " + checkCurrentSeat.TableNo + " to " + replaceSeat.TableNo;
-                    }
+                    checkCurrentSeat.TableStatus = TableStatus.Empty;
+                    checkCurrentSeat.UserRolesId = null;
+                    replaceSeat.UserRolesId = SessionId;
+                    replaceSeat.TableStatus = TableStatus.Occupied;
+                    Save();
+                    return user.Username + " , your seat has changed from T" + checkCurrentSeat.TableNo + " to T" + replaceSeat.TableNo;
                 }
-
-                replaceSeat.UserRolesId = SessionId;
-                replaceSeat.TableStatus = TableStatus.Occupied;
-                Save();
-
-                return user.Username + " , your order is confirmed , your table seat is " + replaceSeat.TableNo;
             }
+
+            replaceSeat.UserRolesId = SessionId;
+            replaceSeat.TableStatus = TableStatus.Occupied;
+            Save();
+
+            return user.Username + " , your order is confirmed , your table seat is T" + replaceSeat.TableNo;
+
         }
 
         public int FoodCount(int SessionId)
