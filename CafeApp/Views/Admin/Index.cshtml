@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Manage</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -45,7 +45,6 @@
     {
         <td>
             @Html.ActionLink("Edit", "Edit", new { id = item.UserRolesId }) |
-            @Html.ActionLink("Details", "Details", new { id = item.UserRolesId }) |
             @if (Convert.ToInt32(Session["AdminId"]) != item.UserRolesId)
             {
                 @Html.ActionLink("Delete", "Delete", new { id = item.UserRolesId })

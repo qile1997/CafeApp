@@ -12,7 +12,7 @@
 <h2>Manage Tables</h2>
 <p style="float:left">@Html.ActionLink("Create New", "Create")</p>
 
-@if (ViewBag.Message == null)
+@if (ViewBag.Message == "")
 {
     <h5 style="display:inline;float:right" onclick="RefreshPage()"><a href="@Url.Action("ReorderTables","Cashier")" id="btn">Re-order Tables</a></h5>
 }

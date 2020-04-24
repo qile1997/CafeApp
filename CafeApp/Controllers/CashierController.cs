@@ -75,12 +75,6 @@ namespace CafeApp.Controllers
         }
         public ActionResult ReorderTables()
         {
-            //bool check = tableRepo.GetTableStatus();
-            //if (check)
-            //{
-            //    ViewBag.Message = "Customers still eating . Cant re-order tables now.";
-            //    return RedirectToAction("Index");
-            //}
             tableRepo.ReorderTables();
             return RedirectToAction("Index");
         }

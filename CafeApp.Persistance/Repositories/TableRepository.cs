@@ -112,7 +112,7 @@ namespace CafeApp.Persistance.Repositories
         {
             var check = db.Table.GroupBy(d => d.TableStatus == TableStatus.Occupied).Count();
 
-            if (check > 1)
+            if (check < 2)
             {
                 return true;
             }
