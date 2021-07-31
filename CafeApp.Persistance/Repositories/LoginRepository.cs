@@ -13,7 +13,7 @@ namespace CafeApp.Persistance.Repositories
         private CafeWebApp db = new CafeWebApp();
         public UserRoles Login(UserRoles userRoles)
         {
-            var LoginUser = db.UserRoles.Where(d => d.Username == userRoles.Username && d.Password == userRoles.Password).SingleOrDefault();
+            var LoginUser = db.UserRoles.Where(d => d.Username == userRoles.Username && d.Password == userRoles.Password).Single();
             return LoginUser;
         }
     }
