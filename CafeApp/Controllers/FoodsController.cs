@@ -14,11 +14,17 @@ namespace CafeApp.Controllers
 {
     public class FoodsController : Controller
     {
-       private FoodRepository foodRepo = new FoodRepository();
+        private FoodRepository _foodRepo;
+
+        //private FoodRepository foodRepo = new FoodRepository();
+        public FoodsController(FoodRepository foodRepo)
+        {
+            _foodRepo = foodRepo;
+        }
         // GET: Foods
         public ActionResult Index()
         {
-           return View(foodRepo.ReadAllFoods());
+           return View(_foodRepo.ReadAllFoods());
         }
 
         // GET: Foods/Details/5
@@ -28,7 +34,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = foodRepo.GetFoodById(id);
+            Food foods = _foodRepo.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -57,7 +63,7 @@ namespace CafeApp.Controllers
                 {
                     return View();
                 }
-                foodRepo.CreateFood(foods);
+                _foodRepo.CreateFood(foods);
                 return RedirectToAction("Index");
             }
 
@@ -97,7 +103,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = foodRepo.GetFoodById(id);
+            Food foods = _foodRepo.GetFoodById(id);
             ViewBag.FoodPicture = foods.PhotoFile;
             if (foods == null)
             {
@@ -115,9 +121,9 @@ namespace CafeApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                foodRepo.UpdateFood(foods);
+                _foodRepo.UpdateFood(foods);
                 UploadPhoto(foods,Photo);
-                foodRepo.SaveChanges();
+                _foodRepo.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(foods);
@@ -130,7 +136,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = foodRepo.GetFoodById(id);
+            Food foods = _foodRepo.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -144,8 +150,8 @@ namespace CafeApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Food foods = foodRepo.GetFoodById(id);
-            foodRepo.DeleteFood(foods);
+            Food foods = _foodRepo.GetFoodById(id);
+            _foodRepo.DeleteFood(foods);
             return RedirectToAction("Index");
         }
 
