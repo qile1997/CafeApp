@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeApp", "CafeApp\CafeApp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeApp.Persistance", "CafeApp.Persistance\CafeApp.Persistance.csproj", "{D496F49E-46EE-4E0F-9522-1A2A9D3741F8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeApp.DomainEntity1", "CafeApp.DomainEntity1\CafeApp.DomainEntity1.csproj", "{1AD91E6A-35D9-47F2-8D5A-8734CF507F65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CafeApp.DomainEntity", "CafeApp.DomainEntity1\CafeApp.DomainEntity.csproj", "{1AD91E6A-35D9-47F2-8D5A-8734CF507F65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

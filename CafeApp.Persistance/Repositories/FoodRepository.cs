@@ -12,35 +12,35 @@ namespace CafeApp.Persistance.Repositories
     public class FoodRepository : iFoodRepository
     {
         private CafeWebApp db = new CafeWebApp();
-        public void AddFood(Foods food)
+        public void CreateFood(Food food)
         {
             db.Foods.Add(food);
-            Save();
+            SaveChanges();
         }
 
-        public void DeleteFood(Foods food)
+        public void DeleteFood(Food food)
         {
             db.Foods.Remove(food);
-            Save();
+            SaveChanges();
         }
 
-        public Foods food(int? id)
+        public Food GetFoodById(int? id)
         {
-            Foods food = db.Foods.Find(id);
+            Food food = db.Foods.Find(id);
             return food;
         }
 
-        public IEnumerable<Foods> GetFoods()
+        public IEnumerable<Food> ReadAllFoods()
         {
             return db.Foods.ToList();
         }
 
-        public void Save()
+        public void SaveChanges()
         {
             db.SaveChanges();
         }
 
-        public void UpdateFood(Foods food)
+        public void UpdateFood(Food food)
         {
             db.Entry(food).State = EntityState.Modified;
         }

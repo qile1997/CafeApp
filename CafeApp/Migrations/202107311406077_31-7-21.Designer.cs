@@ -7,13 +7,13 @@ namespace CafeApp.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class iniitial : IMigrationMetadata
+    public sealed partial class _31721 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(iniitial));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(_31721));
         
         string IMigrationMetadata.Id
         {
-            get { return "202004141108263_iniitial"; }
+            get { return "202107311406077_31-7-21"; }
         }
         
         string IMigrationMetadata.Source

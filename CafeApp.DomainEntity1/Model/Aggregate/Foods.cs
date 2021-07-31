@@ -7,9 +7,9 @@ using System.Web;
 
 namespace CafeApp.DomainEntity
 {
-    public class Foods
+    public class Food
     {
-        public int FoodsId { get; set; }
+        public int FoodId { get; set; }
         public ICollection<OrderCart> OrderCart { get; set; }
         [DisplayName("Food Category")]
         public Category FoodCategory { get; set; }

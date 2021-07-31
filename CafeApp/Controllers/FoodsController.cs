@@ -18,7 +18,7 @@ namespace CafeApp.Controllers
         // GET: Foods
         public ActionResult Index()
         {
-           return View(foodRepo.GetFoods());
+           return View(foodRepo.ReadAllFoods());
         }
 
         // GET: Foods/Details/5
@@ -28,7 +28,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Foods foods = foodRepo.food(id);
+            Food foods = foodRepo.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -48,7 +48,7 @@ namespace CafeApp.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Foods foods, HttpPostedFileBase Photo)
+        public ActionResult Create(Food foods, HttpPostedFileBase Photo)
         {
             if (ModelState.IsValid)
             {
@@ -57,19 +57,19 @@ namespace CafeApp.Controllers
                 {
                     return View();
                 }
-                foodRepo.AddFood(foods);
+                foodRepo.CreateFood(foods);
                 return RedirectToAction("Index");
             }
 
             return View(foods);
         }
-        public void UploadPhoto(Foods foods, HttpPostedFileBase Photo)
+        public void UploadPhoto(Food foods, HttpPostedFileBase Photo)
         {
             if (Photo != null)
             {
                 string fileExtension = Path.GetExtension(Photo.FileName);
 
-                if (!fileExtension.ToLower().Equals(".jpg"))
+                if (!fileExtension.ToLower().Equals(".jpg")|| !fileExtension.ToLower().Equals(".png"))
                 {
                     ViewBag.FailMessage = "Photo invalid file type. Please use only .jpg file.";
                 }
@@ -97,7 +97,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Foods foods = foodRepo.food(id);
+            Food foods = foodRepo.GetFoodById(id);
             ViewBag.FoodPicture = foods.PhotoFile;
             if (foods == null)
             {
@@ -111,13 +111,13 @@ namespace CafeApp.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "FoodsId,FoodCategory,FoodName,Price,Remarks")] Foods foods, HttpPostedFileBase Photo)
+        public ActionResult Edit([Bind(Include = "FoodsId,FoodCategory,FoodName,Price,Remarks")] Food foods, HttpPostedFileBase Photo)
         {
             if (ModelState.IsValid)
             {
                 foodRepo.UpdateFood(foods);
                 UploadPhoto(foods,Photo);
-                foodRepo.Save();
+                foodRepo.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(foods);
@@ -130,7 +130,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Foods foods = foodRepo.food(id);
+            Food foods = foodRepo.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -144,7 +144,7 @@ namespace CafeApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Foods foods = foodRepo.food(id);
+            Food foods = foodRepo.GetFoodById(id);
             foodRepo.DeleteFood(foods);
             return RedirectToAction("Index");
         }

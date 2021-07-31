@@ -12,7 +12,7 @@ namespace CafeApp.DomainEntity
         public int OrderCartId { get; set; }
         [ForeignKey("Foods")]
         public int FoodsId { get; set; }
-        public virtual Foods Foods { get; set; }
+        public virtual Food Foods { get; set; }
         [DisplayName("Quantity")]
         public int FoodQuantity { get; set; }
         [DisplayName("Total Amount (RM)")]

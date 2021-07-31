@@ -61,7 +61,7 @@ namespace CafeApp.Controllers
             }
             ViewBag.Username = userRepo.userRoles(SessionId).Username.ToString();
             ViewBag.Count = orderRepo.FoodCount(SessionId);
-            return View(foodRepo.GetFoods());
+            return View(foodRepo.ReadAllFoods());
         }
         public int SessionID()
         {
@@ -135,7 +135,7 @@ namespace CafeApp.Controllers
         // GET: Customer
         public ActionResult Index()
         {
-            return View(foodRepo.GetFoods());
+            return View(foodRepo.ReadAllFoods());
         }
 
         // GET: Customer/Details/5
@@ -145,7 +145,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Foods foods = foodRepo.food(id);
+            Food foods = foodRepo.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -164,11 +164,11 @@ namespace CafeApp.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "FoodsId,FoodCategory,FoodName,Price,Remarks")] Foods foods)
+        public ActionResult Create([Bind(Include = "FoodsId,FoodCategory,FoodName,Price,Remarks")] Food foods)
         {
             if (ModelState.IsValid)
             {
-                foodRepo.AddFood(foods);
+                foodRepo.CreateFood(foods);
                 return RedirectToAction("Index");
             }
 
@@ -182,7 +182,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Foods foods = foodRepo.food(id);
+            Food foods = foodRepo.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -195,7 +195,7 @@ namespace CafeApp.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "FoodsId,FoodCategory,FoodName,Price,Remarks")] Foods foods)
+        public ActionResult Edit([Bind(Include = "FoodsId,FoodCategory,FoodName,Price,Remarks")] Food foods)
         {
             if (ModelState.IsValid)
             {
@@ -212,7 +212,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Foods foods = foodRepo.food(id);
+            Food foods = foodRepo.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -225,7 +225,7 @@ namespace CafeApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Foods foods = foodRepo.food(id);
+            Food foods = foodRepo.GetFoodById(id);
             foodRepo.DeleteFood(foods);
             return RedirectToAction("Index");
         }

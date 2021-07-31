@@ -44,8 +44,7 @@ namespace CafeApp.Persistance.Repositories
 
         public Table table(int? id)
         {
-            Table table = db.Table.Find(id);
-            return table;
+            return db.Table.Find(id);
         }
         public void ChangeStatus(Table table, int SessionId)
         {
@@ -67,45 +66,34 @@ namespace CafeApp.Persistance.Repositories
             //Correct order of tables
             List<int> arr = new List<int>();
 
-            for (int x = 11; x <= TableCount.Count(); x++)
+            for (int x = 1; x <= TableCount.Count(); x++)
             {
                 arr.Add(x);
             }
 
             int[] _arr = arr.ToArray();
 
-            var reordertable = db.Table.OrderByDescending(d => d.TableNo).Take(arr.Count()).ToList();
-            var updateReorder = reordertable.OrderBy(d => d.TableNo).ToList();
+            var tables = db.Table.OrderBy(d => d.TableNo).ToList();
 
             int i = 0;
 
-            foreach (var item in updateReorder)
+            foreach (var item in tables)
             {
                 item.TableNo = _arr[i];
                 i++;
-                Save();
             }
+            Save();
         }
 
         public void CreateTable()
         {
-            var tableList = db.Table.OrderBy(d => d.TableNo).Skip(10).ToList();
             Table table = new Table();
 
-            if (tableList.Count() < 1)
-            {
-                table.TableNo = 11;
-                table.TableStatus = TableStatus.Empty;
-                AddTable(table);
-            }
-            else
-            {
-                var grabLast = db.Table.OrderBy(d => d.TableNo).ToList().Last();
+            var grabLast = db.Table.OrderBy(d => d.TableNo).ToList().Last();
 
-                table.TableNo = grabLast.TableNo + 1;
-                table.TableStatus = TableStatus.Empty;
-                AddTable(table);
-            }
+            table.TableNo = grabLast.TableNo + 1;
+            table.TableStatus = TableStatus.Empty;
+            AddTable(table);
         }
 
         public bool GetTableStatus()

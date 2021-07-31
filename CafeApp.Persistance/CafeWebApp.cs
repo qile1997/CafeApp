@@ -16,7 +16,7 @@ namespace CafeApp.Persistance
         {
         }
         public DbSet<UserRoles> UserRoles { get; set; }
-        public DbSet<Foods> Foods { get; set; }
+        public DbSet<Food> Foods { get; set; }
         public DbSet<OrderCart> OrderCart { get; set; }
         public DbSet<Table> Table { get; set; }
         // Add a DbSet for each entity type that you want to include in your model. For more information 

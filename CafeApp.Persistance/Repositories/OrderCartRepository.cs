@@ -85,9 +85,9 @@ namespace CafeApp.Persistance.Repositories
                 }
             }
         }
-        public Foods FilterFood(int Id)
+        public Food FilterFood(int Id)
         {
-            return db.Foods.Where(d => d.FoodsId == Id).SingleOrDefault();
+            return db.Foods.Where(d => d.FoodId == Id).SingleOrDefault();
         }
 
         public void ClearCart(int SessionId)

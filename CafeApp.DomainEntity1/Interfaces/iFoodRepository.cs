@@ -6,11 +6,11 @@ namespace CafeApp.DomainEntity.Interfaces
 {
     public interface iFoodRepository
     {
-        IEnumerable<Foods> GetFoods();
-        Foods food(int? id);
-        void AddFood(Foods food);
-        void UpdateFood(Foods food);
-        void DeleteFood(Foods food);
-        void Save();
+        IEnumerable<Food> ReadAllFoods();
+        Food GetFoodById(int? foodId);
+        void CreateFood(Food food);
+        void UpdateFood(Food food);
+        void DeleteFood(Food food);
+        void SaveChanges();
     }
 }

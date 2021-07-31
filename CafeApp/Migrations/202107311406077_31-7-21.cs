@@ -3,7 +3,7 @@ namespace CafeApp.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class iniitial : DbMigration
+    public partial class _31721 : DbMigration
     {
         public override void Up()
         {
@@ -11,14 +11,14 @@ namespace CafeApp.Migrations
                 "dbo.Foods",
                 c => new
                     {
-                        FoodsId = c.Int(nullable: false, identity: true),
+                        FoodId = c.Int(nullable: false, identity: true),
                         FoodCategory = c.Int(nullable: false),
                         FoodName = c.String(),
                         PhotoFile = c.String(),
                         Price = c.Int(nullable: false),
                         Remarks = c.String(),
                     })
-                .PrimaryKey(t => t.FoodsId);
+                .PrimaryKey(t => t.FoodId);
             
             CreateTable(
                 "dbo.OrderCarts",
@@ -52,12 +52,12 @@ namespace CafeApp.Migrations
                 c => new
                     {
                         TableId = c.Int(nullable: false, identity: true),
-                        TableNo = c.String(),
-                        UserRolesId = c.Int(nullable: false),
+                        TableNo = c.Int(nullable: false),
+                        UserRolesId = c.Int(),
                         TableStatus = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.TableId)
-                .ForeignKey("dbo.UserRoles", t => t.UserRolesId, cascadeDelete: true)
+                .ForeignKey("dbo.UserRoles", t => t.UserRolesId)
                 .Index(t => t.UserRolesId);
             
         }

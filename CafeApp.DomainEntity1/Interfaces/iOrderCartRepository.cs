@@ -20,7 +20,7 @@ namespace CafeApp.DomainEntity.Interfaces
         string Cart(int id,int checkId);
         string ConfirmOrder(int id,int Seat);
         void ClearCart(int SessionId);
-        Foods FilterFood(int SessionId);
+        Food FilterFood(int SessionId);
         Table CheckSeat(int SessionId);
         IEnumerable<OrderCart> OrderedFood(int id);
     }

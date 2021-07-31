@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CafeApp.Persistance.Repositories
+namespace CafeApp.Persistance.Services
 {
-    class MethodRepository
+    class LoginService
     {
     }
 }

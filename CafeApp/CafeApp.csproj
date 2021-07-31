@@ -137,13 +137,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202004141108263_iniitial.cs" />
-    <Compile Include="Migrations\202004141108263_iniitial.Designer.cs">
-      <DependentUpon>202004141108263_iniitial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202004141119323_i.cs" />
-    <Compile Include="Migrations\202004141119323_i.Designer.cs">
-      <DependentUpon>202004141119323_i.cs</DependentUpon>
+    <Compile Include="Migrations\202107311406077_31-7-21.cs" />
+    <Compile Include="Migrations\202107311406077_31-7-21.Designer.cs">
+      <DependentUpon>202107311406077_31-7-21.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -163,6 +159,7 @@
     <Content Include="Images\output-onlinepngtools.png" />
     <Content Include="Images\Table.jpg" />
     <Content Include="Images\Table1.png" />
+    <Content Include="Images\thumbnail-default.jpg" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -343,22 +340,19 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202004141108263_iniitial.resx">
-      <DependentUpon>202004141108263_iniitial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202004141119323_i.resx">
-      <DependentUpon>202004141119323_i.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\CafeApp.DomainEntity1\CafeApp.DomainEntity1.csproj">
+    <ProjectReference Include="..\CafeApp.DomainEntity1\CafeApp.DomainEntity.csproj">
       <Project>{1AD91E6A-35D9-47F2-8D5A-8734CF507F65}</Project>
-      <Name>CafeApp.DomainEntity1</Name>
+      <Name>CafeApp.DomainEntity</Name>
     </ProjectReference>
     <ProjectReference Include="..\CafeApp.Persistance\CafeApp.Persistance.csproj">
       <Project>{D496F49E-46EE-4E0F-9522-1A2A9D3741F8}</Project>
       <Name>CafeApp.Persistance</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202107311406077_31-7-21.resx">
+      <DependentUpon>202107311406077_31-7-21.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
