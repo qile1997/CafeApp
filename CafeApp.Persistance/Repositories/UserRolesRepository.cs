@@ -11,107 +11,43 @@ namespace CafeApp.Persistance.Repositories
 {
     public class UserRolesRepository : iUserRolesRepository
     {
-        private CafeWebApp db = new CafeWebApp();
+        private CafeWebApp _context;
+
+        public UserRolesRepository(CafeWebApp context)
+        {
+            _context = context;
+        }
         public void AddUserRoles(UserRoles userRoles)
         {
-            db.UserRoles.Add(userRoles);
-            Save();
-        }
-
-        public void CreateTables(UserRoles userRoles)
-        {
-            var filterTable = db.Table.ToList();
-
-            if (userRoles.Roles == Roles.Cashier && filterTable.Count < 10)
-            {
-                for (int i = 1; i <= 10; i++)
-                {
-                    Table table = new Table();
-                    table.TableId = i;
-                    table.TableNo =  i;
-                    table.TableStatus = TableStatus.Empty;
-                    table.UserRolesId = null;
-                    db.Table.Add(table);
-                }
-            }
-            Save();
+            _context.UserRoles.Add(userRoles);
+            SaveChanges();
         }
 
         public void DeleteUserRoles(UserRoles userRoles)
         {
-            db.UserRoles.Remove(userRoles);
-            Save();
+            _context.UserRoles.Remove(userRoles);
+            SaveChanges();
         }
 
         public IEnumerable<UserRoles> GetUserRoles()
         {
-            return db.UserRoles.ToList();
+            return _context.UserRoles.ToList();
         }
 
-        public void Save()
+        public void SaveChanges()
         {
-            db.SaveChanges();
-        }
-
-        public bool CheckEditDuplicateUser(UserRoles userRoles)
-        {
-            var filterUser = db.UserRoles.Where(d => d.UserRolesId == userRoles.UserRolesId).SingleOrDefault();
-            var editValidation1 = db.UserRoles.Where(d => d.Username != filterUser.Username && d.Roles == filterUser.Roles).ToList();
-            var editValidation2 = editValidation1.Where(d => d.Username == userRoles.Username).SingleOrDefault();
-
-            if (editValidation2 != null)
-            {
-                return true;
-            }
-
-            filterUser.Username = userRoles.Username;
-            filterUser.Password = userRoles.Password;
-            filterUser.Roles = userRoles.Roles;
-            Save();
-            return false;
+            _context.SaveChanges();
         }
 
         public void UpdateUserRoles(UserRoles userRoles)
         {
-            db.Entry(userRoles).State = EntityState.Modified;
+            _context.Entry(userRoles).State = EntityState.Modified;
         }
 
         public UserRoles userRoles(int? id)
         {
-            UserRoles userRoles = db.UserRoles.Find(id);
+            UserRoles userRoles = _context.UserRoles.Find(id);
             return userRoles;
-        }
-
-        public bool CheckDuplicateUser(UserRoles userRoles)
-        {
-            var filterUser = db.UserRoles.Where(d => d.Username == userRoles.Username && d.Roles == userRoles.Roles).SingleOrDefault();
-
-            if (filterUser != null)
-            {
-                return true;
-            }
-            return false;
-        }
-        //When you initialize data without any users
-        public void CreateAdmin()
-        {
-            var createAdminfilter = GetUserRoles().Count();
-
-            if (createAdminfilter < 1)
-            {
-                UserRoles user = new UserRoles();
-                user.Username = "admin";
-                user.Password = "admin";
-                user.Roles = Roles.Admin;
-                db.UserRoles.Add(user);
-                Save();
-            }
-        }
-
-        public int FilterCashier()
-        {
-            var Count = db.UserRoles.Where(d => d.Roles == Roles.Cashier).ToList();
-            return Count.Count();
-        }
+        }   
     }
 }
