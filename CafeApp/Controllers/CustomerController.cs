@@ -6,6 +6,7 @@ using System.Net;
 using System.Web.Mvc;
 using CafeApp.DomainEntity;
 using CafeApp.DomainEntity.Interfaces;
+using CafeApp.DomainEntity.ViewModel;
 using CafeApp.Persistance;
 using CafeApp.Persistance.Repositories;
 using CafeApp.Persistance.Services;
@@ -14,36 +15,29 @@ namespace CafeApp.Controllers
 {
     public class CustomerController : Controller
     {
-        private CafeWebApp _context { get; set; }
-        private iFoodRepository FoodRepository { get; set; }
-        private iOrderCartRepository OrderCartRepository { get; set; }
-        private iTableRepository TableRepository { get; set; }
-        private iUserRepository UserRolesRepository { get; set; }
-        private iUserService UserService { get; set; }
-        public ActionResult LoginPage(CafeWebApp context)
+        private CafeWebApp _context = new CafeWebApp();
+        private UserRepository _userRepository = new UserRepository();
+        private TableRepository TableRepository = new TableRepository();
+        private UserService _userService = new UserService();
+        private FoodRepository FoodRepository = new FoodRepository();
+        private OrderCartRepository _orderCartRepository = new OrderCartRepository();
+        public ActionResult LoginPage()
         {
-            _context = context;
-            InitializeData();
             return View();
         }
-        private void InitializeData()
-        {
-            FoodRepository = new FoodRepository(_context);
-            OrderCartRepository = new OrderCartRepository(_context);
-            TableRepository = new TableRepository(_context);
-            UserRolesRepository = new UserRepository(_context);
-            UserService = new UserService(_context);
-        }
+
         [HttpPost]
-        public ActionResult LoginPage(User user)
+        public ActionResult LoginPage(LoginCredentialsViewModel userCredential)
         {
-            if (UserService.GetAllCashier() < 1)
+            if (_userService.GetAllCashier() < 1)
             {
                 ViewBag.FailMessage = "Sorry , cashier is unavailable . You cannot login .";
                 return View();
             }
 
-            if (UserService.CheckUserCredentials(user, Roles.Customer))
+            var user = _userService.CheckUserCredentials(userCredential, Roles.Customer);
+
+            if (user == null)
             {
                 ViewBag.FailMessage = "Your username / password is invalid";
                 return View();
@@ -60,7 +54,7 @@ namespace CafeApp.Controllers
         public ActionResult Menu()
         {
             int SessionId = SessionID();
-            var TableData = OrderCartRepository.CheckSeat(SessionId);
+            var TableData = _orderCartRepository.CheckSeat(SessionId);
             if (TableData != null)
             {
                 ViewBag.TableNo = TableData.TableNo;
@@ -69,8 +63,8 @@ namespace CafeApp.Controllers
             {
                 ViewBag.TableNo = "Empty";
             }
-            ViewBag.Username = UserRolesRepository.GetUserById(SessionId).Username.ToString();
-            ViewBag.Count = OrderCartRepository.FoodCount(SessionId);
+            ViewBag.Username = _userRepository.GetUserById(SessionId).Username.ToString();
+            ViewBag.Count = _orderCartRepository.FoodCount(SessionId);
             return View(FoodRepository.ReadAllFoods());
         }
         public int SessionID()
@@ -81,7 +75,7 @@ namespace CafeApp.Controllers
         public ActionResult Cart(int Id)
         {
             int SessionId = SessionID();
-            string message = OrderCartRepository.Cart(Id, SessionId);
+            string message = _orderCartRepository.Cart(Id, SessionId);
 
             return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
@@ -89,43 +83,43 @@ namespace CafeApp.Controllers
         {
             int SessionId = SessionID();
 
-            ViewBag.Count = OrderCartRepository.FoodCount(SessionId);
-            ViewBag.FoodTotalSum = OrderCartRepository.FoodPriceSum(SessionId);
-            var TableData = OrderCartRepository.CheckSeat(SessionId);
+            ViewBag.Count = _orderCartRepository.FoodCount(SessionId);
+            ViewBag.FoodTotalSum = _orderCartRepository.FoodPriceSum(SessionId);
+            var TableData = _orderCartRepository.CheckSeat(SessionId);
             if (TableData != null)
             {
                 ViewBag.TableStatus = TableData.TableStatus.ToString();
                 ViewBag.TableNo = TableData.TableNo;
             }
-            return View(OrderCartRepository.OrderedFood(SessionId));
+            return View(_orderCartRepository.OrderedFood(SessionId));
         }
         [HttpPost]
         public ActionResult Quantity(string _operator, int Id)
         {
             int SessionId = SessionID();
-            OrderCartRepository.CartQuantity(Id, _operator, SessionId);
+            _orderCartRepository.CartQuantity(Id, _operator, SessionId);
             return Json(JsonRequestBehavior.AllowGet);
         }
         public ActionResult ClearCart()
         {
             int SessionId = SessionID();
-            OrderCartRepository.ClearCart(SessionId);
+            _orderCartRepository.ClearCart(SessionId);
             return RedirectToAction("OrderCart");
         }
         public ActionResult CancelOrder()
         {
             int SessionId = SessionID();
-            OrderCartRepository.CancelOrder(SessionId);
+            _orderCartRepository.CancelOrder(SessionId);
             return RedirectToAction("OrderCart");
         }
         public ActionResult ConfirmOrderPage()
         {
             int SessionId = SessionID();
-            ViewBag.Count = OrderCartRepository.FoodCount(SessionId);
-            var emptyseat = OrderCartRepository.GetEmptyTables();
+            ViewBag.Count = _orderCartRepository.FoodCount(SessionId);
+            var emptyseat = _orderCartRepository.GetEmptyTables();
             ViewBag.EmptySeatsList = new SelectList(emptyseat, "TableId", "TableNo");
             var tableData = TableRepository.GetTables();
-            var TableStatus = OrderCartRepository.CheckSeat(SessionId);
+            var TableStatus = _orderCartRepository.CheckSeat(SessionId);
             if (TableStatus != null)
             {
                 ViewBag.TableStatus = TableStatus.TableStatus.ToString();
@@ -136,10 +130,10 @@ namespace CafeApp.Controllers
         public ActionResult ConfirmOrderPage(int EmptySeatsList)
         {
             int SessionId = SessionID();
-            ViewBag.Count = OrderCartRepository.FoodCount(SessionId);
-            var emptyseat = OrderCartRepository.GetEmptyTables();
+            ViewBag.Count = _orderCartRepository.FoodCount(SessionId);
+            var emptyseat = _orderCartRepository.GetEmptyTables();
             ViewBag.EmptySeatsList = new SelectList(emptyseat, "TableId", "TableNo");
-            ViewBag.SuccessMessage = OrderCartRepository.ConfirmOrder(SessionId, EmptySeatsList);
+            ViewBag.SuccessMessage = _orderCartRepository.ConfirmOrder(SessionId, EmptySeatsList);
             return View("ConfirmOrderSuccess");
         }
         // GET: Customer

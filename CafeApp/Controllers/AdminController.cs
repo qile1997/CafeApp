@@ -1,46 +1,42 @@
-﻿using System;
-using System.Net;
-using System.Web.Mvc;
-using CafeApp.DomainEntity;
+﻿using CafeApp.DomainEntity;
 using CafeApp.DomainEntity.Interfaces;
+using CafeApp.DomainEntity.ViewModel;
 using CafeApp.Persistance;
 using CafeApp.Persistance.Repositories;
 using CafeApp.Persistance.Services;
+using System;
+using System.Net;
+using System.Web.Mvc;
 
 namespace CafeApp.Controllers
 {
     public class AdminController : Controller
     {
-        private CafeWebApp _context { get; set; }
-        public iUserRepository UserRolesRepository { get; set; }
-        public iUserService UserService { get; set; }
-        public iTableRepository TableRepository { get; set; }
+        private CafeWebApp _context = new CafeWebApp();
+        private UserRepository _userRepository = new UserRepository();
+        private TableRepository TableRepository = new TableRepository();
+        private UserService _userService = new UserService();
+        private FoodRepository FoodRepository = new FoodRepository();
+        private OrderCartRepository OrderCartRepository = new OrderCartRepository();
 
-        public ActionResult LoginPage(CafeWebApp context)
+        public ActionResult LoginPage()
         {
-            _context = context;
-            InitializeData();
+            _userService.CreateAdmin();
             return View();
         }
 
-        public void InitializeData()
-        {
-            UserRolesRepository = new UserRepository(_context);
-            UserService = new UserService(_context);
-            TableRepository = new TableRepository(_context);
-            UserService.CreateAdmin();
-        }
-
         [HttpPost]
-        public ActionResult LoginPage(User user)
+        public ActionResult LoginPage(LoginCredentialsViewModel userCredential)
         {
-            if (!UserService.CheckUserCredentials(user, Roles.Admin))
+            var user = _userService.CheckUserCredentials(userCredential, Roles.Admin);
+
+            if (user == null)
             {
                 ViewBag.FailMessage = "Your username / password is invalid";
                 return View();
             }
 
-            Session["AdminId"] = user;
+            Session["AdminId"] = user.UserId;
             return RedirectToAction("Index");
         }
 
@@ -52,7 +48,7 @@ namespace CafeApp.Controllers
         // GET: Admin
         public ActionResult Index()
         {
-            return View(UserRolesRepository.GetAllUsers());
+            return View(_userRepository.GetAllUsers());
         }
 
         // GET: Admin/Details/5
@@ -62,7 +58,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User userRoles = UserRolesRepository.GetUserById(id);
+            User userRoles = _userRepository.GetUserById(id);
             if (userRoles == null)
             {
                 return HttpNotFound();
@@ -85,14 +81,14 @@ namespace CafeApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool check = UserService.CheckDuplicateUser(userRoles);
+                bool check = _userService.CheckDuplicateUser(userRoles);
                 if (check)
                 {
                     ViewBag.FailMessage = "This user is already registered";
                     return View();
                 }
-                UserService.CreateTables(userRoles);
-                UserRolesRepository.AddUser(userRoles);
+                _userService.CreateTables(userRoles);
+                _userRepository.AddUser(userRoles);
                 return RedirectToAction("Index");
             }
             return View(userRoles);
@@ -104,7 +100,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User userRoles = UserRolesRepository.GetUserById(id);
+            User userRoles = _userRepository.GetUserById(id);
             if (userRoles == null)
             {
                 return HttpNotFound();
@@ -121,8 +117,8 @@ namespace CafeApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //int Id = Convert.ToInt32(Session["AdminId"]);
-                bool check = UserService.CheckEditDuplicateUser(userRoles);
+                int Id = Convert.ToInt32(Session["AdminId"]);
+                bool check = _userService.CheckEditDuplicateUser(userRoles);
                 if (check)
                 {
                     ViewBag.FailMessage = "This data is already registered in database";
@@ -140,7 +136,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User userRoles = UserRolesRepository.GetUserById(id);
+            User userRoles = _userRepository.GetUserById(id);
             if (userRoles == null)
             {
                 return HttpNotFound();
@@ -153,11 +149,11 @@ namespace CafeApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            User userRoles = UserRolesRepository.GetUserById(id);
-            UserRolesRepository.DeleteUser(userRoles);
+            User userRoles = _userRepository.GetUserById(id);
+            _userRepository.DeleteUser(userRoles);
             if (userRoles.Roles == Roles.Cashier)
             {
-                int Count = UserService.GetAllCashier();
+                int Count = _userService.GetAllCashier();
                 if (Count < 1)
                 {
                     TableRepository.DeleteAllTable();

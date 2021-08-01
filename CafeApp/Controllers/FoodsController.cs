@@ -2,6 +2,7 @@
 using CafeApp.DomainEntity.Interfaces;
 using CafeApp.Persistance;
 using CafeApp.Persistance.Repositories;
+using CafeApp.Persistance.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,21 +17,19 @@ namespace CafeApp.Controllers
 {
     public class FoodsController : Controller
     {
-        private iFoodRepository FoodRepository { get; set; }
-        private CafeWebApp _context { get; set; }
+        private CafeWebApp _context = new CafeWebApp();
+        private UserRepository _userRepository = new UserRepository();
+        private TableRepository TableRepository = new TableRepository();
+        private UserService _userService = new UserService();
+        private FoodRepository _foodRepository = new FoodRepository();
+        private OrderCartRepository OrderCartRepository = new OrderCartRepository();
 
         // GET: Foods
-        public ActionResult Index(CafeWebApp context)
+        public ActionResult Index()
         {
-            _context = context;
-            InitializeData();
-            return View(FoodRepository.ReadAllFoods());
+            return View(_foodRepository.ReadAllFoods());
         }
 
-        public void InitializeData()
-        {
-            FoodRepository = new FoodRepository(_context);
-        }
         // GET: Foods/Details/5
         public ActionResult Details(int? id)
         {
@@ -38,7 +37,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = FoodRepository.GetFoodById(id);
+            Food foods = _foodRepository.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -67,7 +66,7 @@ namespace CafeApp.Controllers
                 {
                     return View();
                 }
-                FoodRepository.CreateFood(foods);
+                _foodRepository.CreateFood(foods);
                 return RedirectToAction("Index");
             }
 
@@ -107,7 +106,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = FoodRepository.GetFoodById(id);
+            Food foods = _foodRepository.GetFoodById(id);
             ViewBag.FoodPicture = foods.PhotoFile;
             if (foods == null)
             {
@@ -125,9 +124,9 @@ namespace CafeApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                FoodRepository.UpdateFood(foods);
+                _foodRepository.UpdateFood(foods);
                 UploadPhoto(foods, Photo);
-                FoodRepository.SaveChanges();
+                _foodRepository.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(foods);
@@ -140,7 +139,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = FoodRepository.GetFoodById(id);
+            Food foods = _foodRepository.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -154,8 +153,8 @@ namespace CafeApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Food foods = FoodRepository.GetFoodById(id);
-            FoodRepository.DeleteFood(foods);
+            Food foods = _foodRepository.GetFoodById(id);
+            _foodRepository.DeleteFood(foods);
             return RedirectToAction("Index");
         }
 

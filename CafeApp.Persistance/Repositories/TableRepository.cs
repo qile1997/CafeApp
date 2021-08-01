@@ -6,19 +6,18 @@ using System.Threading.Tasks;
 using CafeApp.DomainEntity;
 using CafeApp.DomainEntity.Interfaces;
 using System.Data.Entity;
+using CafeApp.Persistance.Services;
 
 namespace CafeApp.Persistance.Repositories
 {
     public class TableRepository : iTableRepository
     {
-        private CafeWebApp _context { get; set; }
-        public iOrderCartRepository OrderCartRepository { get; set; }
-        public TableRepository(CafeWebApp context)
-        {
-            _context = context;
-            OrderCartRepository = new OrderCartRepository(_context);
-        }
-
+        private CafeWebApp _context = new CafeWebApp();
+        private UserRepository UserRepository = new UserRepository();
+        private TableRepository _tableRepository = new TableRepository();
+        private UserService _userService = new UserService();
+        private FoodRepository FoodRepository = new FoodRepository();
+        private OrderCartRepository OrderCartRepository = new OrderCartRepository();
         public void AddTable(Table table)
         {
             _context.Table.Add(table);

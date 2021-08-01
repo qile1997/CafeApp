@@ -1,40 +1,32 @@
-﻿using System;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web.Mvc;
-using CafeApp.Persistance.Repositories;
-using CafeApp.DomainEntity;
-using CafeApp.Persistance;
-using System.Collections.Generic;
+﻿using CafeApp.DomainEntity;
 using CafeApp.DomainEntity.Interfaces;
+using CafeApp.DomainEntity.ViewModel;
+using CafeApp.Persistance;
+using CafeApp.Persistance.Repositories;
 using CafeApp.Persistance.Services;
+using System.Web.Mvc;
 
 namespace CafeApp.Controllers
 {
     public class CashierController : Controller
     {
-        private CafeWebApp _context { get; set; }
-        public iLoginService LoginService { get; set; }
-        public iTableRepository TableRepository { get; set; }
-        public ActionResult LoginPage(CafeWebApp context)
+        private CafeWebApp _context = new CafeWebApp();
+        private UserRepository _userRepository = new UserRepository();
+        private TableRepository _tableRepository = new TableRepository();
+        private UserService _userService = new UserService();
+        private FoodRepository FoodRepository = new FoodRepository();
+        private OrderCartRepository _orderCartRepository = new OrderCartRepository();
+        public ActionResult LoginPage()
         {
-            _context = context;
-            InitializeData();
             return View();
         }
-        public void InitializeData()
-        {
-            LoginService = new LoginService(_context);
-            TableRepository = new TableRepository(_context);
-        }
-        [HttpPost]
-        public ActionResult LoginPage(User userRoles)
-        {
-            User user = LoginService.LoginUserRole(Roles.Cashier, userRoles);
 
-            if (user == null || user.Roles != Roles.Cashier)
+        [HttpPost]
+        public ActionResult LoginPage(LoginCredentialsViewModel userCredential)
+        {
+            var user = _userService.CheckUserCredentials(userCredential, Roles.Cashier);
+
+            if (user == null)
             {
                 ViewBag.FailMessage = "Your username / password is invalid";
                 return View();
@@ -45,23 +37,23 @@ namespace CafeApp.Controllers
         // GET: Cashier
         public ActionResult Index()
         {
-            bool check = TableRepository.GetTableStatus();
+            bool check = _tableRepository.GetTableStatus();
             if (check)
             {
                 ViewBag.Message = "";
-                return View(TableRepository.GetTables());
+                return View(_tableRepository.GetTables());
             }
-            return View(TableRepository.GetTables());
+            return View(_tableRepository.GetTables());
         }
         public ActionResult Tables()
         {
-            return View(TableRepository.GetTables());
+            return View(_tableRepository.GetTables());
         }
 
         // GET: Cashier/Create
         public ActionResult Create()
         {
-            TableRepository.CreateTable();
+            _tableRepository.CreateTable();
             return RedirectToAction("Index");
         }
         public ActionResult Logout()
@@ -71,20 +63,20 @@ namespace CafeApp.Controllers
         }
         public ActionResult Delete(int? id)
         {
-            Table table = TableRepository.table(id);
-            TableRepository.DeleteTable(table);
+            Table table = _tableRepository.table(id);
+            _tableRepository.DeleteTable(table);
 
             return RedirectToAction("Index");
         }
         public ActionResult ChangeStatus(int id, int SessionId)
         {
-            Table table = TableRepository.table(id);
-            TableRepository.ChangeStatus(table, SessionId);
+            Table table = _tableRepository.table(id);
+            _tableRepository.ChangeStatus(table, SessionId);
             return RedirectToAction("Index");
         }
         public ActionResult ReorderTables()
         {
-            TableRepository.ReorderTables();
+            _tableRepository.ReorderTables();
             return RedirectToAction("Index");
         }
     }

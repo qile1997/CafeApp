@@ -1,5 +1,6 @@
 ﻿using CafeApp.DomainEntity;
 using CafeApp.DomainEntity.Interfaces;
+using CafeApp.Persistance.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -11,11 +12,12 @@ namespace CafeApp.Persistance.Repositories
 {
     public class OrderCartRepository : iOrderCartRepository
     {
-        private CafeWebApp _context;
-        public OrderCartRepository(CafeWebApp context)
-        {
-            _context = context;
-        }
+        private CafeWebApp _context = new CafeWebApp();
+        private UserRepository _userRepository = new UserRepository();
+        private TableRepository TableRepository = new TableRepository();
+        private UserService _userService = new UserService();
+        private FoodRepository FoodRepository = new FoodRepository();
+        private OrderCartRepository _orderCartRepository = new OrderCartRepository();
         public void AddCart(OrderCart cart)
         {
             _context.OrderCart.Add(cart);
