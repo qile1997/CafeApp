@@ -12,6 +12,7 @@ namespace CafeApp.Controllers
     {
         private UserRepository _userRepository = new UserRepository();
         private TableRepository _tableRepository = new TableRepository();
+        private TableService _tableService = new TableService();
         private UserService _userService = new UserService();
         private FoodRepository _foodRepository = new FoodRepository();
         private OrderCartRepository _orderCartRepository = new OrderCartRepository();
@@ -36,23 +37,23 @@ namespace CafeApp.Controllers
         // GET: Cashier
         public ActionResult Index()
         {
-            bool check = _tableRepository.GetTableStatus();
+            bool check = _tableService.GetTableStatus();
             if (check)
             {
                 ViewBag.Message = "";
-                return View(_tableRepository.GetTables());
+                return View(_tableRepository.GetAllTables());
             }
-            return View(_tableRepository.GetTables());
+            return View(_tableRepository.GetAllTables());
         }
         public ActionResult Tables()
         {
-            return View(_tableRepository.GetTables());
+            return View(_tableRepository.GetAllTables());
         }
 
         // GET: Cashier/Create
         public ActionResult Create()
         {
-            _tableRepository.CreateTable();
+            _tableRepository.CreateTableWithOneClick();
             return RedirectToAction("Index");
         }
         public ActionResult Logout()
@@ -62,20 +63,19 @@ namespace CafeApp.Controllers
         }
         public ActionResult Delete(int? id)
         {
-            Table table = _tableRepository.table(id);
+            Table table = _tableRepository.GetTableById(id);
             _tableRepository.DeleteTable(table);
 
             return RedirectToAction("Index");
         }
         public ActionResult ChangeStatus(int id, int SessionId)
         {
-            Table table = _tableRepository.table(id);
-            _tableRepository.ChangeStatus(table, SessionId);
+            _tableService.ChangeTableStatus(_tableRepository.GetTableById(id), SessionId);
             return RedirectToAction("Index");
         }
         public ActionResult ReorderTables()
         {
-            _tableRepository.ReorderTables();
+            _tableService.ReorderTables();
             return RedirectToAction("Index");
         }
     }

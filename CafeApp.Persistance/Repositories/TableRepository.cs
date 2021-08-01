@@ -13,99 +13,51 @@ namespace CafeApp.Persistance.Repositories
     public class TableRepository : iTableRepository
     {
         private CafeWebApp _context = new CafeWebApp();
-        private OrderCartRepository _orderCartRepository = new OrderCartRepository();
         public void AddTable(Table table)
         {
             _context.Table.Add(table);
-            Save();
+            SaveChanges();
         }
 
-        public void DeleteAllTable()
+        public void DeleteAllTables()
         {
-            var AllTables = GetTables();
-            _context.Table.RemoveRange(AllTables);
-            Save();
+            _context.Table.RemoveRange(GetAllTables());
+            SaveChanges();
         }
 
         public void DeleteTable(Table table)
         {
             _context.Table.Remove(table);
-            Save();
+            SaveChanges();
         }
 
-        public IEnumerable<Table> GetTables()
+        public IEnumerable<Table> GetAllTables()
         {
             return _context.Table.OrderBy(d => d.TableNo).ToList();
         }
 
-        public void Save()
+        public void SaveChanges()
         {
             _context.SaveChanges();
         }
 
-        public Table table(int? id)
+        public Table GetTableById(int? id)
         {
             return _context.Table.Find(id);
-        }
-        public void ChangeStatus(Table table, int SessionId)
-        {
-            table.UserId = null;
-            table.TableStatus = TableStatus.Empty;
-            _orderCartRepository.ClearCart(SessionId);
-            Save();
         }
         public void UpdateTable(Table table)
         {
             _context.Entry(table).State = EntityState.Modified;
-            Save();
+            SaveChanges();
         }
-
-        public void ReorderTables()
-        {
-            var TableCount = GetTables();
-
-            //Correct order of tables
-            List<int> arr = new List<int>();
-
-            for (int x = 1; x <= TableCount.Count(); x++)
-            {
-                arr.Add(x);
-            }
-
-            int[] _arr = arr.ToArray();
-
-            var tables = _context.Table.OrderBy(d => d.TableNo).ToList();
-
-            int i = 0;
-
-            foreach (var item in tables)
-            {
-                item.TableNo = _arr[i];
-                i++;
-            }
-            Save();
-        }
-
-        public void CreateTable()
+        public void CreateTableWithOneClick()
         {
             Table table = new Table();
 
-            var grabLast = _context.Table.OrderBy(d => d.TableNo).ToList().Last();
-
-            table.TableNo = grabLast.TableNo + 1;
+            //Order table Id , grab last table and increase Id by 1
+            table.TableNo = _context.Table.OrderBy(d => d.TableNo).ToList().Last().TableNo + 1;
             table.TableStatus = TableStatus.Empty;
             AddTable(table);
-        }
-
-        public bool GetTableStatus()
-        {
-            var check = _context.Table.GroupBy(d => d.TableStatus == TableStatus.Occupied).Count();
-
-            if (check < 2)
-            {
-                return true;
-            }
-            return false;
         }
     }
 }

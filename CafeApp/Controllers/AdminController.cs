@@ -117,12 +117,11 @@ namespace CafeApp.Controllers
             {
                 //int Id = Convert.ToInt32(Session["AdminId"]);
 
-                if (_userService.CheckEditDuplicateUser(userRoles)) ;
+                if (_userService.CheckDuplicateUser_EditMode(userRoles))
                 {
                     ViewBag.FailMessage = "This data is already registered in database";
                     return View();
                 }
-                return RedirectToAction("Index");
             }
             return View(userRoles);
         }
@@ -150,7 +149,7 @@ namespace CafeApp.Controllers
 
             if (_userRepository.GetUserById(id).Roles == Roles.Cashier && _userRepository.GetAllCashier().Count() == 0)
             {
-                TableRepository.DeleteAllTable();
+                TableRepository.DeleteAllTables();
             }
             return RedirectToAction("Index");
         }

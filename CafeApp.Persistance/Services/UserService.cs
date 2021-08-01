@@ -16,7 +16,7 @@ namespace CafeApp.Persistance.Services
 
         public void CreateTables(User userRoles)
         {
-            if (userRoles.Roles == Roles.Cashier && _tableRepository.GetTables().Count() < 10)
+            if (userRoles.Roles == Roles.Cashier && _tableRepository.GetAllTables().Count() < 10)
             {
                 for (int i = 1; i <= 10; i++)
                 {
@@ -31,7 +31,19 @@ namespace CafeApp.Persistance.Services
             }  
         }
 
-        public bool CheckEditDuplicateUser(User user)
+        public void CreateAdmin()
+        {
+            if (_userRepository.GetAllUsers().Count() < 1)
+            {
+                User user = new User();
+                user.Username = "admin";
+                user.Password = "admin";
+                user.Roles = Roles.Admin;
+                _context.Users.Add(user);
+                SaveChanges();
+            }
+        }
+        public bool CheckDuplicateUser_EditMode(User user)
         {
             var initUser = _context.Users.Where(d => d.UserId == user.UserId).SingleOrDefault();
             var notInitUser = _context.Users.Where(d => d.Username != initUser.Username && d.Roles == initUser.Roles).ToList();
@@ -52,19 +64,6 @@ namespace CafeApp.Persistance.Services
         public bool CheckDuplicateUser(User user)
         {
             return _context.Users.Where(d => d.Username == user.Username && d.Roles == user.Roles).SingleOrDefault() != null ? true : false;
-        }
-        //When initialize data without any users
-        public void CreateAdmin()
-        {
-            if (_userRepository.GetAllUsers().Count() < 1)
-            {
-                User user = new User();
-                user.Username = "admin";
-                user.Password = "admin";
-                user.Roles = Roles.Admin;
-                _context.Users.Add(user);
-                SaveChanges();
-            }
         }
         public User CheckUserCredentials(LoginCredentialsViewModel userCredentials, Roles roles)
         {

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CafeApp.DomainEntity.Foods>
+﻿@model IEnumerable<CafeApp.DomainEntity.Food>
 
 @{
     Layout = "~/Views/Shared/Customer_Layout.cshtml";
@@ -37,7 +37,7 @@
                 RM @Html.DisplayFor(modelItem => item.Price)
             </dt>
         </dl>
-        <button class="button btn btn-info" data-id="@item.FoodsId">Add To Cart</button>
+        <button class="button btn btn-info" data-id="@item.FoodId">Add To Cart</button>
     </div>
 }
 

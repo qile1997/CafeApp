@@ -117,7 +117,7 @@ namespace CafeApp.Controllers
             ViewBag.Count = _orderCartRepository.FoodCount(SessionId);
             var emptyseat = _orderCartRepository.GetEmptyTables();
             ViewBag.EmptySeatsList = new SelectList(emptyseat, "TableId", "TableNo");
-            var tableData = TableRepository.GetTables();
+            var tableData = TableRepository.GetAllTables();
             var TableStatus = _orderCartRepository.CheckSeat(SessionId);
             if (TableStatus != null)
             {

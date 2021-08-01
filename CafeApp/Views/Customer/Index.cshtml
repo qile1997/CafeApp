@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CafeApp.DomainEntity.Foods>
+﻿@model IEnumerable<CafeApp.DomainEntity.Food>
 
 @{
     Layout = "~/Views/Shared/Customer_Layout.cshtml";
@@ -42,9 +42,9 @@
                 @Html.DisplayFor(modelItem => item.Remarks)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.FoodsId }) |
-                @Html.ActionLink("Details", "Details", new { id = item.FoodsId }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.FoodsId })
+                @Html.ActionLink("Edit", "Edit", new { id = item.FoodId }) |
+                @Html.ActionLink("Details", "Details", new { id = item.FoodId }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.FoodId })
             </td>
         </tr>
     }
