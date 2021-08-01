@@ -4,11 +4,6 @@
     Layout = "~/Views/Shared/Cashier_Layout.cshtml";
 }
 
-@*@if (ViewBag.Message != null)
-    {
-        <div class="alert alert-danger" style="text-align:center">@ViewBag.Message</div>
-    }*@
-
 <h2>Manage Tables</h2>
 <p style="float:left">@Html.ActionLink("Create New", "Create")</p>
 
@@ -40,7 +35,7 @@
                 @if (item.TableStatus == CafeApp.DomainEntity.TableStatus.Occupied)
                 {
                     <td>
-                        <p><a href="@Url.Action("ChangeStatus","Cashier",new {id=item.TableId,SessionId=item.UserRolesId})">@item.TableStatus</a></p>
+                        <p><a href="@Url.Action("ChangeStatus","Cashier",new {id=item.TableId,SessionId=item.UserId})">@item.TableStatus</a></p>
                     </td>
                 }
                 else
@@ -62,7 +57,7 @@
                 @if (item.TableStatus == CafeApp.DomainEntity.TableStatus.Occupied)
                 {
                     <td>
-                        <p><a href="@Url.Action("ChangeStatus","Cashier",new {id=item.TableId,SessionId=item.UserRolesId})">@item.TableStatus</a></p>
+                        <p><a href="@Url.Action("ChangeStatus","Cashier",new {id=item.TableId,SessionId=item.UserId})">@item.TableStatus</a></p>
                     </td>
                 }
                 else

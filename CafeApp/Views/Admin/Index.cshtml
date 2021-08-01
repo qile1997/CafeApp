@@ -44,10 +44,10 @@
     else
     {
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id = item.UserRolesId }) |
-            @if (Convert.ToInt32(Session["AdminId"]) != item.UserRolesId)
+            @Html.ActionLink("Edit", "Edit", new { id = item.UserId }) |
+            @if (Convert.ToInt32(Session["AdminId"]) != item.UserId)
             {
-                @Html.ActionLink("Delete", "Delete", new { id = item.UserRolesId })
+                @Html.ActionLink("Delete", "Delete", new { id = item.UserId })
             }
         </td>
     }

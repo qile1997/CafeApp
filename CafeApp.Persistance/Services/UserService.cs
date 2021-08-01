@@ -2,6 +2,7 @@
 using CafeApp.DomainEntity.Interfaces;
 using CafeApp.DomainEntity.ViewModel;
 using CafeApp.Persistance.Repositories;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CafeApp.Persistance.Services
@@ -9,25 +10,13 @@ namespace CafeApp.Persistance.Services
     public class UserService : iUserService
     {
 
-        //private CafeWebApp _context;
-        //public iUserRepository UserRepository { get; }
-        //public iTableRepository TableRepository { get; }
-
-        //public UserService(CafeWebApp context)
-        //{
-        //    _context = context;
-        //    UserRepository = new UserRepository(_context);
-        //    TableRepository = new TableRepository(_context);
-        //}
         private CafeWebApp _context = new CafeWebApp();
-        private UserRepository UserRepository = new UserRepository();
-        private TableRepository TableRepository = new TableRepository();
-        private UserService _userService = new UserService();
-        private FoodRepository FoodRepository = new FoodRepository();
-        private OrderCartRepository OrderCartRepository = new OrderCartRepository();
+        private UserRepository _userRepository = new UserRepository();
+        private TableRepository _tableRepository = new TableRepository();
+
         public void CreateTables(User userRoles)
         {
-            if (userRoles.Roles == Roles.Cashier && TableRepository.GetTables().Count() < 10)
+            if (userRoles.Roles == Roles.Cashier && _tableRepository.GetTables().Count() < 10)
             {
                 for (int i = 1; i <= 10; i++)
                 {
@@ -38,42 +27,36 @@ namespace CafeApp.Persistance.Services
                     table.UserId = null;
                     _context.Table.Add(table);
                 }
-            }
-            SaveChanges();
+                SaveChanges();
+            }  
         }
 
-        public bool CheckEditDuplicateUser(User userRoles)
+        public bool CheckEditDuplicateUser(User user)
         {
-            var filterUser = _context.Users.Where(d => d.UserId == userRoles.UserId).SingleOrDefault();
-            var editValidation1 = _context.Users.Where(d => d.Username != filterUser.Username && d.Roles == filterUser.Roles).ToList();
-            var editValidation2 = editValidation1.Where(d => d.Username == userRoles.Username).SingleOrDefault();
+            var initUser = _context.Users.Where(d => d.UserId == user.UserId).SingleOrDefault();
+            var notInitUser = _context.Users.Where(d => d.Username != initUser.Username && d.Roles == initUser.Roles).ToList();
+            var duplicateUserExist = notInitUser.Where(d => d.Username == user.Username).SingleOrDefault();
 
-            if (editValidation2 != null)
+            if (duplicateUserExist != null)
             {
                 return true;
             }
 
-            filterUser.Username = userRoles.Username;
-            filterUser.Password = userRoles.Password;
-            filterUser.Roles = userRoles.Roles;
+            initUser.Username = user.Username;
+            initUser.Password = user.Password;
+            //initUser.Roles = user.Roles;
             SaveChanges();
             return false;
         }
 
-        public bool CheckDuplicateUser(User userRoles)
+        public bool CheckDuplicateUser(User user)
         {
-            var filterUser = _context.Users.Where(d => d.Username == userRoles.Username && d.Roles == userRoles.Roles).SingleOrDefault();
-
-            if (filterUser != null)
-            {
-                return true;
-            }
-            return false;
+            return _context.Users.Where(d => d.Username == user.Username && d.Roles == user.Roles).SingleOrDefault() != null ? true : false;
         }
-        //When you initialize data without any users
+        //When initialize data without any users
         public void CreateAdmin()
         {
-            if (UserRepository.GetAllUsers().Count() < 1)
+            if (_userRepository.GetAllUsers().Count() < 1)
             {
                 User user = new User();
                 user.Username = "admin";
@@ -83,14 +66,8 @@ namespace CafeApp.Persistance.Services
                 SaveChanges();
             }
         }
-
-        public int GetAllCashier()
-        {
-            return _context.Users.Where(d => d.Roles == Roles.Cashier).ToList().Count();
-        }
         public User CheckUserCredentials(LoginCredentialsViewModel userCredentials, Roles roles)
         {
-            CafeWebApp _context = new CafeWebApp();
             var user = _context.Users.Where(d => d.Username == userCredentials.Username && d.Password == userCredentials.Password && d.Roles == roles).SingleOrDefault();
 
             return user != null ? user : null;

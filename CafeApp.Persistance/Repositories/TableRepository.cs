@@ -13,11 +13,7 @@ namespace CafeApp.Persistance.Repositories
     public class TableRepository : iTableRepository
     {
         private CafeWebApp _context = new CafeWebApp();
-        private UserRepository UserRepository = new UserRepository();
-        private TableRepository _tableRepository = new TableRepository();
-        private UserService _userService = new UserService();
-        private FoodRepository FoodRepository = new FoodRepository();
-        private OrderCartRepository OrderCartRepository = new OrderCartRepository();
+        private OrderCartRepository _orderCartRepository = new OrderCartRepository();
         public void AddTable(Table table)
         {
             _context.Table.Add(table);
@@ -55,7 +51,7 @@ namespace CafeApp.Persistance.Repositories
         {
             table.UserId = null;
             table.TableStatus = TableStatus.Empty;
-            OrderCartRepository.ClearCart(SessionId);
+            _orderCartRepository.ClearCart(SessionId);
             Save();
         }
         public void UpdateTable(Table table)

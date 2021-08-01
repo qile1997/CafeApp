@@ -10,11 +10,10 @@ namespace CafeApp.Controllers
 {
     public class CashierController : Controller
     {
-        private CafeWebApp _context = new CafeWebApp();
         private UserRepository _userRepository = new UserRepository();
         private TableRepository _tableRepository = new TableRepository();
         private UserService _userService = new UserService();
-        private FoodRepository FoodRepository = new FoodRepository();
+        private FoodRepository _foodRepository = new FoodRepository();
         private OrderCartRepository _orderCartRepository = new OrderCartRepository();
         public ActionResult LoginPage()
         {

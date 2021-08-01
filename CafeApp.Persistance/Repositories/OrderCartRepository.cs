@@ -13,11 +13,6 @@ namespace CafeApp.Persistance.Repositories
     public class OrderCartRepository : iOrderCartRepository
     {
         private CafeWebApp _context = new CafeWebApp();
-        private UserRepository _userRepository = new UserRepository();
-        private TableRepository TableRepository = new TableRepository();
-        private UserService _userService = new UserService();
-        private FoodRepository FoodRepository = new FoodRepository();
-        private OrderCartRepository _orderCartRepository = new OrderCartRepository();
         public void AddCart(OrderCart cart)
         {
             _context.OrderCart.Add(cart);

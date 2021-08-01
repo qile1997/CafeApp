@@ -5,6 +5,7 @@ using CafeApp.Persistance;
 using CafeApp.Persistance.Repositories;
 using CafeApp.Persistance.Services;
 using System;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 
@@ -12,7 +13,6 @@ namespace CafeApp.Controllers
 {
     public class AdminController : Controller
     {
-        private CafeWebApp _context = new CafeWebApp();
         private UserRepository _userRepository = new UserRepository();
         private TableRepository TableRepository = new TableRepository();
         private UserService _userService = new UserService();
@@ -58,12 +58,11 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User userRoles = _userRepository.GetUserById(id);
-            if (userRoles == null)
+            if (_userRepository.GetUserById(id) == null)
             {
                 return HttpNotFound();
             }
-            return View(userRoles);
+            return View(_userRepository.GetUserById(id));
         }
 
         // GET: Admin/Create
@@ -81,8 +80,7 @@ namespace CafeApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool check = _userService.CheckDuplicateUser(userRoles);
-                if (check)
+                if (_userService.CheckDuplicateUser(userRoles))
                 {
                     ViewBag.FailMessage = "This user is already registered";
                     return View();
@@ -100,12 +98,12 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User userRoles = _userRepository.GetUserById(id);
-            if (userRoles == null)
+
+            if (_userRepository.GetUserById(id) == null)
             {
                 return HttpNotFound();
             }
-            return View(userRoles);
+            return View(_userRepository.GetUserById(id));
         }
 
         // POST: Admin/Edit/5
@@ -117,9 +115,9 @@ namespace CafeApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                int Id = Convert.ToInt32(Session["AdminId"]);
-                bool check = _userService.CheckEditDuplicateUser(userRoles);
-                if (check)
+                //int Id = Convert.ToInt32(Session["AdminId"]);
+
+                if (_userService.CheckEditDuplicateUser(userRoles)) ;
                 {
                     ViewBag.FailMessage = "This data is already registered in database";
                     return View();
@@ -136,12 +134,11 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User userRoles = _userRepository.GetUserById(id);
-            if (userRoles == null)
+            if (_userRepository.GetUserById(id) == null)
             {
                 return HttpNotFound();
             }
-            return View(userRoles);
+            return View(_userRepository.GetUserById(id));
         }
 
         // POST: Admin/Delete/5
@@ -149,15 +146,11 @@ namespace CafeApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            User userRoles = _userRepository.GetUserById(id);
-            _userRepository.DeleteUser(userRoles);
-            if (userRoles.Roles == Roles.Cashier)
+            _userRepository.DeleteUser(_userRepository.GetUserById(id));
+
+            if (_userRepository.GetUserById(id).Roles == Roles.Cashier && _userRepository.GetAllCashier().Count() == 0)
             {
-                int Count = _userService.GetAllCashier();
-                if (Count < 1)
-                {
-                    TableRepository.DeleteAllTable();
-                }
+                TableRepository.DeleteAllTable();
             }
             return RedirectToAction("Index");
         }

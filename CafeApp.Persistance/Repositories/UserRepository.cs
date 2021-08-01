@@ -13,11 +13,6 @@ namespace CafeApp.Persistance.Repositories
     public class UserRepository : iUserRepository
     {
         private CafeWebApp _context = new CafeWebApp();
-        private UserRepository _userRepository = new UserRepository();
-        private TableRepository TableRepository = new TableRepository();
-        private UserService _userService = new UserService();
-        private FoodRepository FoodRepository = new FoodRepository();
-        private OrderCartRepository OrderCartRepository = new OrderCartRepository();
 
         public void AddUser(User user)
         {
@@ -27,6 +22,10 @@ namespace CafeApp.Persistance.Repositories
         public IEnumerable<User> GetAllUsers()
         {
             return _context.Users.ToList();
+        }
+        public IEnumerable<User> GetAllCashier()
+        {
+            return _context.Users.Where(d => d.Roles == Roles.Cashier).ToList();
         }
         public void UpdateUser(User user)
         {

@@ -15,7 +15,6 @@ namespace CafeApp.Controllers
 {
     public class CustomerController : Controller
     {
-        private CafeWebApp _context = new CafeWebApp();
         private UserRepository _userRepository = new UserRepository();
         private TableRepository TableRepository = new TableRepository();
         private UserService _userService = new UserService();
@@ -29,7 +28,7 @@ namespace CafeApp.Controllers
         [HttpPost]
         public ActionResult LoginPage(LoginCredentialsViewModel userCredential)
         {
-            if (_userService.GetAllCashier() < 1)
+            if (_userRepository.GetAllCashier().Count() < 1)
             {
                 ViewBag.FailMessage = "Sorry , cashier is unavailable . You cannot login .";
                 return View();

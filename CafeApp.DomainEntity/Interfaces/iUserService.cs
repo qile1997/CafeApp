@@ -1,12 +1,12 @@
 ﻿
 
 using CafeApp.DomainEntity.ViewModel;
+using System.Collections.Generic;
 
 namespace CafeApp.DomainEntity.Interfaces
 {
     public interface iUserService
     {
-        int GetAllCashier();
         void CreateTables(User user);
         bool CheckEditDuplicateUser(User user);
         bool CheckDuplicateUser(User user);

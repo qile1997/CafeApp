@@ -17,7 +17,6 @@ namespace CafeApp.Controllers
 {
     public class FoodsController : Controller
     {
-        private CafeWebApp _context = new CafeWebApp();
         private UserRepository _userRepository = new UserRepository();
         private TableRepository TableRepository = new TableRepository();
         private UserService _userService = new UserService();
