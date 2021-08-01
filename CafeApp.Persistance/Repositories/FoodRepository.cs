@@ -11,38 +11,42 @@ namespace CafeApp.Persistance.Repositories
 {
     public class FoodRepository : iFoodRepository
     {
-        private CafeWebApp db = new CafeWebApp();
+        private CafeWebApp _context;
+        public FoodRepository(CafeWebApp context)
+        {
+            _context = context;
+        }
         public void CreateFood(Food food)
         {
-            db.Foods.Add(food);
+            _context.Foods.Add(food);
             SaveChanges();
         }
 
         public void DeleteFood(Food food)
         {
-            db.Foods.Remove(food);
+            _context.Foods.Remove(food);
             SaveChanges();
         }
 
         public Food GetFoodById(int? id)
         {
-            Food food = db.Foods.Find(id);
+            Food food = _context.Foods.Find(id);
             return food;
         }
 
         public IEnumerable<Food> ReadAllFoods()
         {
-            return db.Foods.ToList();
-        }
-
-        public void SaveChanges()
-        {
-            db.SaveChanges();
+            return _context.Foods.ToList();
         }
 
         public void UpdateFood(Food food)
         {
-            db.Entry(food).State = EntityState.Modified;
+            _context.Entry(food).State = EntityState.Modified;
         }
+        public void SaveChanges()
+        {
+            _context.SaveChanges();
+        }
+
     }
 }

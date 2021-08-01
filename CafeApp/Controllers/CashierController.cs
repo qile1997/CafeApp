@@ -8,51 +8,60 @@ using CafeApp.Persistance.Repositories;
 using CafeApp.DomainEntity;
 using CafeApp.Persistance;
 using System.Collections.Generic;
+using CafeApp.DomainEntity.Interfaces;
+using CafeApp.Persistance.Services;
 
 namespace CafeApp.Controllers
 {
     public class CashierController : Controller
     {
-        private CafeWebApp db = new CafeWebApp();
-        private LoginRepository loginRepo = new LoginRepository();
-        private TableRepository tableRepo = new TableRepository();
-        public ActionResult LoginPage()
+        private CafeWebApp _context { get; set; }
+        public iLoginService LoginService { get; set; }
+        public iTableRepository TableRepository { get; set; }
+        public ActionResult LoginPage(CafeWebApp context)
         {
+            _context = context;
+            InitializeData();
             return View();
         }
-        [HttpPost]
-        public ActionResult LoginPage(UserRoles userRoles)
+        public void InitializeData()
         {
-            UserRoles user = loginRepo.Login(userRoles);
+            LoginService = new LoginService(_context);
+            TableRepository = new TableRepository(_context);
+        }
+        [HttpPost]
+        public ActionResult LoginPage(User userRoles)
+        {
+            User user = LoginService.LoginUserRole(Roles.Cashier, userRoles);
 
             if (user == null || user.Roles != Roles.Cashier)
             {
                 ViewBag.FailMessage = "Your username / password is invalid";
                 return View();
             }
-            Session["CashierId"] = user.UserRolesId;
+            Session["CashierId"] = user.UserId;
             return RedirectToAction("Tables");
         }
         // GET: Cashier
         public ActionResult Index()
         {
-            bool check = tableRepo.GetTableStatus();
+            bool check = TableRepository.GetTableStatus();
             if (check)
             {
                 ViewBag.Message = "";
-                return View(tableRepo.GetTables());
+                return View(TableRepository.GetTables());
             }
-            return View(tableRepo.GetTables());
+            return View(TableRepository.GetTables());
         }
         public ActionResult Tables()
         {
-            return View(tableRepo.GetTables());
+            return View(TableRepository.GetTables());
         }
 
         // GET: Cashier/Create
         public ActionResult Create()
         {
-            tableRepo.CreateTable();
+            TableRepository.CreateTable();
             return RedirectToAction("Index");
         }
         public ActionResult Logout()
@@ -62,20 +71,20 @@ namespace CafeApp.Controllers
         }
         public ActionResult Delete(int? id)
         {
-            Table table = tableRepo.table(id);
-            tableRepo.DeleteTable(table);
+            Table table = TableRepository.table(id);
+            TableRepository.DeleteTable(table);
 
             return RedirectToAction("Index");
         }
         public ActionResult ChangeStatus(int id, int SessionId)
         {
-            Table table = tableRepo.table(id);
-            tableRepo.ChangeStatus(table, SessionId);
+            Table table = TableRepository.table(id);
+            TableRepository.ChangeStatus(table, SessionId);
             return RedirectToAction("Index");
         }
         public ActionResult ReorderTables()
         {
-            tableRepo.ReorderTables();
+            TableRepository.ReorderTables();
             return RedirectToAction("Index");
         }
     }

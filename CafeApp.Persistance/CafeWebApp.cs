@@ -15,7 +15,7 @@ namespace CafeApp.Persistance
             : base("name=CafeWebApp")
         {
         }
-        public DbSet<UserRoles> UserRoles { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Food> Foods { get; set; }
         public DbSet<OrderCart> OrderCart { get; set; }
         public DbSet<Table> Table { get; set; }

@@ -43,18 +43,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\iLoginService.cs" />
-    <Compile Include="Interfaces\iUserRolesService.cs" />
+    <Compile Include="Interfaces\iUserService.cs" />
     <Compile Include="Model\Aggregate\Foods.cs" />
     <Compile Include="Interfaces\iFoodRepository.cs" />
-    <Compile Include="Interfaces\iLoginRepository.cs" />
     <Compile Include="Interfaces\iOrderCartRepository.cs" />
     <Compile Include="Interfaces\iTableRepository.cs" />
-    <Compile Include="Interfaces\iUserRolesRepository.cs" />
+    <Compile Include="Interfaces\iUserRepository.cs" />
     <Compile Include="Model\Aggregate\OrderCart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\Aggregate\Table.cs" />
-    <Compile Include="Model\Aggregate\UserRoles.cs" />
+    <Compile Include="Model\Aggregate\User.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

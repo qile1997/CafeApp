@@ -12,7 +12,7 @@ namespace CafeApp.DomainEntity.Interfaces
         void AddCart(OrderCart cart);
         void UpdateCart(OrderCart cart);
         void RemoveCart(OrderCart cart);
-        void Save();
+        void SaveChanges();
         void CancelOrder(int id);
         int FoodCount(int id);
         int FoodPriceSum(int id);

@@ -10,10 +10,14 @@ namespace CafeApp.Persistance.Repositories
 {
     public class LoginRepository : iLoginRepository
     {
-        private CafeWebApp db = new CafeWebApp();
-        public UserRoles Login(UserRoles userRoles)
+        private CafeWebApp _context;
+        public LoginRepository(CafeWebApp context)
         {
-            var LoginUser = db.UserRoles.Where(d => d.Username == userRoles.Username && d.Password == userRoles.Password).Single();
+            _context = context;
+        }
+        public User Login(User userRoles)
+        {
+            var LoginUser = _context.Users.Where(d => d.Username == userRoles.Username && d.Password == userRoles.Password).Single();
             return LoginUser;
         }
     }

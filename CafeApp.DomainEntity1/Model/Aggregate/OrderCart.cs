@@ -17,9 +17,9 @@ namespace CafeApp.DomainEntity
         public int FoodQuantity { get; set; }
         [DisplayName("Total Amount (RM)")]
         public int TotalAmount { get; set; }
-        [ForeignKey("UserRoles")]
-        public int UserRolesId { get; set; }
-        public virtual UserRoles UserRoles { get; set; }
+        [ForeignKey("User")]
+        public int UserId { get; set; }
+        public virtual User User { get; set; }
 
     }
 }

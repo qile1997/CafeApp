@@ -11,16 +11,20 @@ namespace CafeApp.Persistance.Repositories
 {
     public class OrderCartRepository : iOrderCartRepository
     {
-        CafeWebApp db = new CafeWebApp();
+        private CafeWebApp _context;
+        public OrderCartRepository(CafeWebApp context)
+        {
+            _context = context;
+        }
         public void AddCart(OrderCart cart)
         {
-            db.OrderCart.Add(cart);
-            Save();
+            _context.OrderCart.Add(cart);
+            SaveChanges();
         }
 
         public OrderCart cart(int? id)
         {
-            OrderCart cart = db.OrderCart.Find(id);
+            OrderCart cart = _context.OrderCart.Find(id);
             return cart;
         }
 
@@ -30,7 +34,7 @@ namespace CafeApp.Persistance.Repositories
             OrderCart cart = new OrderCart();
 
             //Filter cart/food ordered that belongs to the customerID
-            var filterCart = db.OrderCart.Where(d => d.FoodsId == Id && d.UserRolesId == SessionId).SingleOrDefault();
+            var filterCart = _context.OrderCart.Where(d => d.FoodsId == Id && d.UserId == SessionId).SingleOrDefault();
             //Filter food that belongs to the customerID
             var filterFood = FilterFood(Id);
 
@@ -38,7 +42,7 @@ namespace CafeApp.Persistance.Repositories
             {
                 filterCart.FoodQuantity++;
                 filterCart.TotalAmount = filterFood.Price * filterCart.FoodQuantity;
-                Save();
+                SaveChanges();
                 return filterFood.FoodName + " added into quantity .";
             }
             else
@@ -46,7 +50,7 @@ namespace CafeApp.Persistance.Repositories
                 cart.FoodsId = Id;
                 cart.TotalAmount = filterFood.Price;
                 cart.FoodQuantity = 1;
-                cart.UserRolesId = SessionId;
+                cart.UserId = SessionId;
 
                 AddCart(cart);
                 return filterFood.FoodName + " added into order .";
@@ -55,13 +59,13 @@ namespace CafeApp.Persistance.Repositories
 
         public void CartQuantity(int FoodsId, string _operator, int SessionId)
         {
-            var filterCart = db.OrderCart.Where(d => d.FoodsId == FoodsId && d.UserRolesId == SessionId).SingleOrDefault();
+            var filterCart = _context.OrderCart.Where(d => d.FoodsId == FoodsId && d.UserId == SessionId).SingleOrDefault();
             var filterFood = FilterFood(FoodsId);
             if (_operator == "+")
             {
                 filterCart.FoodQuantity++;
                 filterCart.TotalAmount = filterFood.Price * filterCart.FoodQuantity;
-                Save();
+                SaveChanges();
                 return;
             }
             else if (_operator == "x")
@@ -80,14 +84,14 @@ namespace CafeApp.Persistance.Repositories
                         return;
                     }
                     filterCart.TotalAmount = filterFood.Price * filterCart.FoodQuantity;
-                    Save();
+                    SaveChanges();
                     return;
                 }
             }
         }
         public Food FilterFood(int Id)
         {
-            return db.Foods.Where(d => d.FoodId == Id).SingleOrDefault();
+            return _context.Foods.Where(d => d.FoodId == Id).SingleOrDefault();
         }
 
         public void ClearCart(int SessionId)
@@ -95,24 +99,24 @@ namespace CafeApp.Persistance.Repositories
             var orderedFood = OrderedFood(SessionId);
             foreach (var item in orderedFood)
             {
-                db.OrderCart.Remove(item);
+                _context.OrderCart.Remove(item);
             }
-            Save();
+            SaveChanges();
         }
         public void CancelOrder(int SessionId)
         {
             ClearCart(SessionId);
             var checkSeat = CheckSeat(SessionId);
             checkSeat.TableStatus = TableStatus.Empty;
-            checkSeat.UserRolesId = null;
-            Save();
+            checkSeat.UserId = null;
+            SaveChanges();
         }
 
         public string ConfirmOrder(int SessionId, int Seat)
         {
-            var user = db.UserRoles.Where(d => d.UserRolesId == SessionId).SingleOrDefault();
+            var user = _context.Users.Where(d => d.UserId == SessionId).SingleOrDefault();
             var checkCurrentSeat = CheckSeat(SessionId);
-            var replaceSeat = db.Table.Where(d => d.TableId == Seat).SingleOrDefault();
+            var replaceSeat = _context.Table.Where(d => d.TableId == Seat).SingleOrDefault();
             var filterfood = OrderedFood(SessionId);
 
             if (checkCurrentSeat != null)
@@ -120,17 +124,17 @@ namespace CafeApp.Persistance.Repositories
                 if (checkCurrentSeat.TableStatus == TableStatus.Occupied)
                 {
                     checkCurrentSeat.TableStatus = TableStatus.Empty;
-                    checkCurrentSeat.UserRolesId = null;
-                    replaceSeat.UserRolesId = SessionId;
+                    checkCurrentSeat.UserId = null;
+                    replaceSeat.UserId = SessionId;
                     replaceSeat.TableStatus = TableStatus.Occupied;
-                    Save();
+                    SaveChanges();
                     return user.Username + " , your seat has changed from T" + checkCurrentSeat.TableNo + " to T" + replaceSeat.TableNo;
                 }
             }
 
-            replaceSeat.UserRolesId = SessionId;
+            replaceSeat.UserId = SessionId;
             replaceSeat.TableStatus = TableStatus.Occupied;
-            Save();
+            SaveChanges();
 
             return user.Username + " , your order is confirmed , your table seat is T" + replaceSeat.TableNo;
 
@@ -161,38 +165,38 @@ namespace CafeApp.Persistance.Repositories
 
         public IEnumerable<Table> GetEmptyTables()
         {
-            return db.Table.Where(d => d.TableStatus == TableStatus.Empty).ToList();
+            return _context.Table.Where(d => d.TableStatus == TableStatus.Empty).ToList();
         }
 
         public IEnumerable<OrderCart> GetOrderCarts()
         {
-            return db.OrderCart.ToList();
+            return _context.OrderCart.ToList();
         }
 
         public IEnumerable<OrderCart> OrderedFood(int SessionId)
         {
-            return db.OrderCart.Where(d => d.UserRolesId == SessionId).ToList();
+            return _context.OrderCart.Where(d => d.UserId == SessionId).ToList();
         }
 
         public void RemoveCart(OrderCart cart)
         {
-            db.OrderCart.Remove(cart);
-            Save();
+            _context.OrderCart.Remove(cart);
+            SaveChanges();
         }
 
-        public void Save()
+        public void SaveChanges()
         {
-            db.SaveChanges();
+            _context.SaveChanges();
         }
 
         public void UpdateCart(OrderCart cart)
         {
-            db.Entry(cart).State = EntityState.Modified;
+            _context.Entry(cart).State = EntityState.Modified;
         }
 
         public Table CheckSeat(int SessionId)
         {
-            var tableData = db.Table.Where(d => d.UserRolesId == SessionId).SingleOrDefault();
+            var tableData = _context.Table.Where(d => d.UserId == SessionId).SingleOrDefault();
             return tableData;
         }
 

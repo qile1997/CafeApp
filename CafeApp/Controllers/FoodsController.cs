@@ -1,4 +1,6 @@
 ﻿using CafeApp.DomainEntity;
+using CafeApp.DomainEntity.Interfaces;
+using CafeApp.Persistance;
 using CafeApp.Persistance.Repositories;
 using System;
 using System.Collections.Generic;
@@ -14,19 +16,21 @@ namespace CafeApp.Controllers
 {
     public class FoodsController : Controller
     {
-        private FoodRepository _foodRepo;
+        private iFoodRepository FoodRepository { get; set; }
+        private CafeWebApp _context { get; set; }
 
-        //private FoodRepository foodRepo = new FoodRepository();
-        public FoodsController(FoodRepository foodRepo)
-        {
-            _foodRepo = foodRepo;
-        }
         // GET: Foods
-        public ActionResult Index()
+        public ActionResult Index(CafeWebApp context)
         {
-           return View(_foodRepo.ReadAllFoods());
+            _context = context;
+            InitializeData();
+            return View(FoodRepository.ReadAllFoods());
         }
 
+        public void InitializeData()
+        {
+            FoodRepository = new FoodRepository(_context);
+        }
         // GET: Foods/Details/5
         public ActionResult Details(int? id)
         {
@@ -34,7 +38,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = _foodRepo.GetFoodById(id);
+            Food foods = FoodRepository.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -63,7 +67,7 @@ namespace CafeApp.Controllers
                 {
                     return View();
                 }
-                _foodRepo.CreateFood(foods);
+                FoodRepository.CreateFood(foods);
                 return RedirectToAction("Index");
             }
 
@@ -75,7 +79,7 @@ namespace CafeApp.Controllers
             {
                 string fileExtension = Path.GetExtension(Photo.FileName);
 
-                if (!fileExtension.ToLower().Equals(".jpg")|| !fileExtension.ToLower().Equals(".png"))
+                if (!fileExtension.ToLower().Equals(".jpg") || !fileExtension.ToLower().Equals(".png"))
                 {
                     ViewBag.FailMessage = "Photo invalid file type. Please use only .jpg file.";
                 }
@@ -103,7 +107,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = _foodRepo.GetFoodById(id);
+            Food foods = FoodRepository.GetFoodById(id);
             ViewBag.FoodPicture = foods.PhotoFile;
             if (foods == null)
             {
@@ -121,9 +125,9 @@ namespace CafeApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                _foodRepo.UpdateFood(foods);
-                UploadPhoto(foods,Photo);
-                _foodRepo.SaveChanges();
+                FoodRepository.UpdateFood(foods);
+                UploadPhoto(foods, Photo);
+                FoodRepository.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(foods);
@@ -136,7 +140,7 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = _foodRepo.GetFoodById(id);
+            Food foods = FoodRepository.GetFoodById(id);
             if (foods == null)
             {
                 return HttpNotFound();
@@ -150,8 +154,8 @@ namespace CafeApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Food foods = _foodRepo.GetFoodById(id);
-            _foodRepo.DeleteFood(foods);
+            Food foods = FoodRepository.GetFoodById(id);
+            FoodRepository.DeleteFood(foods);
             return RedirectToAction("Index");
         }
 
