@@ -14,33 +14,31 @@ namespace CafeApp.Persistance.Services
         private CafeWebApp _context = new CafeWebApp();
         private TableRepository _tableRepository = new TableRepository();
         private OrderCartRepository _orderCartRepository = new OrderCartRepository();
+        private OrderCartService _orderCartService = new OrderCartService();
         public void ChangeTableStatus(Table table, int SessionId)
         {
-            table.UserId = null;
-            table.TableStatus = TableStatus.Empty;
-            _orderCartRepository.ClearCart(SessionId);
+            var removeTable = _tableRepository.GetTableById(table.TableId);
+            removeTable.UserId = null;
+            removeTable.TableStatus = TableStatus.Empty;
+            _orderCartService.ClearUserCartService(SessionId);
             _tableRepository.SaveChanges();
         }
 
         public void ReorderTables()
         {
-            var TableCount = _tableRepository.GetAllTables();
-
             //Correct order of tables
             List<int> arr = new List<int>();
 
-            for (int x = 1; x <= TableCount.Count(); x++)
+            for (int x = 1; x <= _tableRepository.GetAllTables().Count(); x++)
             {
                 arr.Add(x);
             }
 
             int[] _arr = arr.ToArray();
 
-            var tables = _context.Table.OrderBy(d => d.TableNo).ToList();
-
             int i = 0;
 
-            foreach (var item in tables)
+            foreach (var item in _context.Table.OrderBy(d => d.TableNo).ToList())
             {
                 item.TableNo = _arr[i];
                 i++;
@@ -50,13 +48,7 @@ namespace CafeApp.Persistance.Services
 
         public bool GetTableStatus()
         {
-            var check = _context.Table.GroupBy(d => d.TableStatus == TableStatus.Occupied).Count();
-
-            if (check < 2)
-            {
-                return true;
-            }
-            return false;
+            return _context.Table.GroupBy(d => d.TableStatus == TableStatus.Occupied).Count() < 2 ? true : false;
         }
     }
 }

@@ -27,8 +27,7 @@ namespace CafeApp.Persistance.Repositories
 
         public Food GetFoodById(int? id)
         {
-            Food food = _context.Foods.Find(id);
-            return food;
+            return _context.Foods.Find(id);
         }
 
         public IEnumerable<Food> ReadAllFoods()

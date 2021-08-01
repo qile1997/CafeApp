@@ -89,7 +89,7 @@
             $.ajax({
                 type: "POST",
                 url: "/Customer/Quantity",
-                data: { _operator: operation, Id: dataId },
+                data: { _operator: operation, FoodId: dataId },
                 success: function () {
                     location.reload();
                 }

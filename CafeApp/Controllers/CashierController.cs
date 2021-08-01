@@ -24,27 +24,25 @@ namespace CafeApp.Controllers
         [HttpPost]
         public ActionResult LoginPage(LoginCredentialsViewModel userCredential)
         {
-            var user = _userService.CheckUserCredentials(userCredential, Roles.Cashier);
-
-            if (user == null)
+            if (_userService.CheckUserCredentials(userCredential, Roles.Cashier) == null)
             {
                 ViewBag.FailMessage = "Your username / password is invalid";
                 return View();
             }
-            Session["CashierId"] = user.UserId;
+            Session["CashierId"] = _userService.CheckUserCredentials(userCredential, Roles.Cashier).UserId;
             return RedirectToAction("Tables");
         }
         // GET: Cashier
         public ActionResult Index()
         {
-            bool check = _tableService.GetTableStatus();
-            if (check)
+            if (_tableService.GetTableStatus())
             {
                 ViewBag.Message = "";
                 return View(_tableRepository.GetAllTables());
             }
             return View(_tableRepository.GetAllTables());
         }
+
         public ActionResult Tables()
         {
             return View(_tableRepository.GetAllTables());
@@ -56,23 +54,25 @@ namespace CafeApp.Controllers
             _tableRepository.CreateTableWithOneClick();
             return RedirectToAction("Index");
         }
+
         public ActionResult Logout()
         {
             Session.Abandon();
             return RedirectToAction("LoginPage");
         }
+
         public ActionResult Delete(int? id)
         {
-            Table table = _tableRepository.GetTableById(id);
-            _tableRepository.DeleteTable(table);
-
+            _tableRepository.DeleteTable(_tableRepository.GetTableById(id));
             return RedirectToAction("Index");
         }
+
         public ActionResult ChangeStatus(int id, int SessionId)
         {
             _tableService.ChangeTableStatus(_tableRepository.GetTableById(id), SessionId);
             return RedirectToAction("Index");
         }
+
         public ActionResult ReorderTables()
         {
             _tableService.ReorderTables();

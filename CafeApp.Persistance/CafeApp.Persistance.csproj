@@ -57,6 +57,7 @@
     <Compile Include="Repositories\OrderCartRepository.cs" />
     <Compile Include="Repositories\TableRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Services\OrderCartService.cs" />
     <Compile Include="Services\TableService.cs" />
     <Compile Include="Services\UserService.cs" />
   </ItemGroup>

@@ -16,10 +16,11 @@ namespace CafeApp.Controllers
     public class CustomerController : Controller
     {
         private UserRepository _userRepository = new UserRepository();
-        private TableRepository TableRepository = new TableRepository();
+        private TableRepository _tableRepository = new TableRepository();
         private UserService _userService = new UserService();
         private FoodRepository FoodRepository = new FoodRepository();
         private OrderCartRepository _orderCartRepository = new OrderCartRepository();
+        private OrderCartService _orderCartService = new OrderCartService();
         public ActionResult LoginPage()
         {
             return View();
@@ -34,15 +35,13 @@ namespace CafeApp.Controllers
                 return View();
             }
 
-            var user = _userService.CheckUserCredentials(userCredential, Roles.Customer);
-
-            if (user == null)
+            if (_userService.CheckUserCredentials(userCredential, Roles.Customer) == null)
             {
                 ViewBag.FailMessage = "Your username / password is invalid";
                 return View();
             }
 
-            Session["CustomerId"] = user.UserId;
+            Session["CustomerId"] = _userService.CheckUserCredentials(userCredential, Roles.Customer).UserId;
             return RedirectToAction("Menu");
         }
         public ActionResult Logout()
@@ -52,87 +51,76 @@ namespace CafeApp.Controllers
         }
         public ActionResult Menu()
         {
-            int SessionId = SessionID();
-            var TableData = _orderCartRepository.CheckSeat(SessionId);
-            if (TableData != null)
+            if (_orderCartService.CheckUserTable(Convert.ToInt32(Session["CustomerId"])) != null)
             {
-                ViewBag.TableNo = TableData.TableNo;
+                ViewBag.TableNo = _orderCartService.CheckUserTable(Convert.ToInt32(Session["CustomerId"])).TableNo;
             }
             else
             {
                 ViewBag.TableNo = "Empty";
             }
-            ViewBag.Username = _userRepository.GetUserById(SessionId).Username.ToString();
-            ViewBag.Count = _orderCartRepository.FoodCount(SessionId);
+            ViewBag.Username = _userRepository.GetUserById(Convert.ToInt32(Session["CustomerId"])).Username.ToString();
+            ViewBag.Count = _orderCartService.FoodCount(Convert.ToInt32(Session["CustomerId"]));
             return View(FoodRepository.ReadAllFoods());
         }
-        public int SessionID()
-        {
-            return Convert.ToInt32(Session["CustomerId"]);
-        }
+
         [HttpPost]
         public ActionResult Cart(int Id)
         {
-            int SessionId = SessionID();
-            string message = _orderCartRepository.Cart(Id, SessionId);
+            string message = _orderCartService.UserOrderCartService(Id, Convert.ToInt32(Session["CustomerId"]));
 
             return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
         public ActionResult OrderCart()
         {
-            int SessionId = SessionID();
+            ViewBag.Count = _orderCartService.FoodCount(Convert.ToInt32(Session["CustomerId"]));
+            ViewBag.FoodTotalSum = _orderCartService.FoodPriceSum(Convert.ToInt32(Session["CustomerId"]));
 
-            ViewBag.Count = _orderCartRepository.FoodCount(SessionId);
-            ViewBag.FoodTotalSum = _orderCartRepository.FoodPriceSum(SessionId);
-            var TableData = _orderCartRepository.CheckSeat(SessionId);
-            if (TableData != null)
+            if (_orderCartService.CheckUserTable(Convert.ToInt32(Session["CustomerId"])) != null)
             {
-                ViewBag.TableStatus = TableData.TableStatus.ToString();
-                ViewBag.TableNo = TableData.TableNo;
+                ViewBag.TableStatus = _orderCartService.CheckUserTable(Convert.ToInt32(Session["CustomerId"])).TableStatus.ToString();
+                ViewBag.TableNo = _orderCartService.CheckUserTable(Convert.ToInt32(Session["CustomerId"])).TableNo;
             }
-            return View(_orderCartRepository.OrderedFood(SessionId));
+            return View(_orderCartService.UserOrderedFoodList(Convert.ToInt32(Session["CustomerId"])));
         }
+
         [HttpPost]
-        public ActionResult Quantity(string _operator, int Id)
+        public ActionResult Quantity(string _operator, int FoodId)
         {
-            int SessionId = SessionID();
-            _orderCartRepository.CartQuantity(Id, _operator, SessionId);
+            _orderCartService.UserOrderCartQuantityService(FoodId, _operator, Convert.ToInt32(Session["CustomerId"]));
             return Json(JsonRequestBehavior.AllowGet);
         }
+
         public ActionResult ClearCart()
         {
-            int SessionId = SessionID();
-            _orderCartRepository.ClearCart(SessionId);
+            _orderCartService.ClearUserCartService(Convert.ToInt32(Session["CustomerId"]));
             return RedirectToAction("OrderCart");
         }
+
         public ActionResult CancelOrder()
         {
-            int SessionId = SessionID();
-            _orderCartRepository.CancelOrder(SessionId);
+            _orderCartService.CancelUserOrderService(Convert.ToInt32(Session["CustomerId"]));
             return RedirectToAction("OrderCart");
         }
+
         public ActionResult ConfirmOrderPage()
         {
-            int SessionId = SessionID();
-            ViewBag.Count = _orderCartRepository.FoodCount(SessionId);
-            var emptyseat = _orderCartRepository.GetEmptyTables();
-            ViewBag.EmptySeatsList = new SelectList(emptyseat, "TableId", "TableNo");
-            var tableData = TableRepository.GetAllTables();
-            var TableStatus = _orderCartRepository.CheckSeat(SessionId);
-            if (TableStatus != null)
+            ViewBag.Count = _orderCartService.FoodCount(Convert.ToInt32(Session["CustomerId"]));
+            ViewBag.EmptySeatsList = new SelectList(_orderCartRepository.GetEmptyStatusTables(), "TableId", "TableNo");
+
+            if (_orderCartService.CheckUserTable(Convert.ToInt32(Session["CustomerId"])) != null)
             {
-                ViewBag.TableStatus = TableStatus.TableStatus.ToString();
+                ViewBag.TableStatus = _orderCartService.CheckUserTable(Convert.ToInt32(Session["CustomerId"])).TableStatus.ToString();
             }
-            return View(tableData);
+            return View(_tableRepository.GetAllTables());
         }
+
         [HttpPost]
         public ActionResult ConfirmOrderPage(int EmptySeatsList)
         {
-            int SessionId = SessionID();
-            ViewBag.Count = _orderCartRepository.FoodCount(SessionId);
-            var emptyseat = _orderCartRepository.GetEmptyTables();
-            ViewBag.EmptySeatsList = new SelectList(emptyseat, "TableId", "TableNo");
-            ViewBag.SuccessMessage = _orderCartRepository.ConfirmOrder(SessionId, EmptySeatsList);
+            ViewBag.Count = _orderCartService.FoodCount(Convert.ToInt32(Session["CustomerId"]));
+            ViewBag.EmptySeatsList = new SelectList(_orderCartRepository.GetEmptyStatusTables(), "TableId", "TableNo");
+            ViewBag.SuccessMessage = _orderCartService.ConfirmUserOrderService(Convert.ToInt32(Session["CustomerId"]), EmptySeatsList);
             return View("ConfirmOrderSuccess");
         }
         // GET: Customer
@@ -215,12 +203,12 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = FoodRepository.GetFoodById(id);
-            if (foods == null)
+
+            if (FoodRepository.GetFoodById(id) == null)
             {
                 return HttpNotFound();
             }
-            return View(foods);
+            return View(FoodRepository.GetFoodById(id));
         }
 
         // POST: Customer/Delete/5
@@ -228,8 +216,7 @@ namespace CafeApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Food foods = FoodRepository.GetFoodById(id);
-            FoodRepository.DeleteFood(foods);
+            FoodRepository.DeleteFood(FoodRepository.GetFoodById(id));
             return RedirectToAction("Index");
         }
     }

@@ -28,15 +28,13 @@ namespace CafeApp.Controllers
         [HttpPost]
         public ActionResult LoginPage(LoginCredentialsViewModel userCredential)
         {
-            var user = _userService.CheckUserCredentials(userCredential, Roles.Admin);
-
-            if (user == null)
+            if (_userService.CheckUserCredentials(userCredential, Roles.Admin) == null)
             {
                 ViewBag.FailMessage = "Your username / password is invalid";
                 return View();
             }
 
-            Session["AdminId"] = user.UserId;
+            Session["AdminId"] = _userService.CheckUserCredentials(userCredential, Roles.Admin).UserId;
             return RedirectToAction("Index");
         }
 
@@ -76,20 +74,20 @@ namespace CafeApp.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Username,Password,Roles")] User userRoles)
+        public ActionResult Create([Bind(Include = "Id,Username,Password,Roles")] User user)
         {
             if (ModelState.IsValid)
             {
-                if (_userService.CheckDuplicateUser(userRoles))
+                if (_userService.CheckDuplicateUser(user))
                 {
                     ViewBag.FailMessage = "This user is already registered";
                     return View();
                 }
-                _userService.CreateTables(userRoles);
-                _userRepository.AddUser(userRoles);
+                _userService.CreateTables(user);
+                _userRepository.AddUser(user);
                 return RedirectToAction("Index");
             }
-            return View(userRoles);
+            return View(user);
         }
         // GET: Admin/Edit/5
         public ActionResult Edit(int? id)
@@ -111,19 +109,18 @@ namespace CafeApp.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(User userRoles)
+        public ActionResult Edit(User user)
         {
             if (ModelState.IsValid)
             {
-                //int Id = Convert.ToInt32(Session["AdminId"]);
 
-                if (_userService.CheckDuplicateUser_EditMode(userRoles))
+                if (_userService.CheckDuplicateUser_EditMode(user))
                 {
                     ViewBag.FailMessage = "This data is already registered in database";
                     return View();
                 }
             }
-            return View(userRoles);
+            return View(user);
         }
 
         // GET: Admin/Delete/5

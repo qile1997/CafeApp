@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\iOrderCartService.cs" />
     <Compile Include="Interfaces\iTableService.cs" />
     <Compile Include="Interfaces\iUserService.cs" />
     <Compile Include="Model\Aggregate\Foods.cs" />

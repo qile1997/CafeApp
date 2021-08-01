@@ -77,7 +77,7 @@ namespace CafeApp.Controllers
             {
                 string fileExtension = Path.GetExtension(Photo.FileName);
 
-                if (!fileExtension.ToLower().Equals(".jpg") || !fileExtension.ToLower().Equals(".png"))
+                if (!fileExtension.ToLower().Equals(".jpg")/* || !fileExtension.ToLower().Equals(".png")*/)
                 {
                     ViewBag.FailMessage = "Photo invalid file type. Please use only .jpg file.";
                 }
