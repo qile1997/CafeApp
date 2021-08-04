@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CafeApp.DomainEntity;
+﻿using CafeApp.DomainEntity;
 using CafeApp.DomainEntity.Interfaces;
+using System.Collections.Generic;
 using System.Data.Entity;
-using CafeApp.Persistance.Services;
+using System.Linq;
 
 namespace CafeApp.Persistance.Repositories
 {

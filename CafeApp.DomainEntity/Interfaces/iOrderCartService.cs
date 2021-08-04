@@ -9,15 +9,15 @@ namespace CafeApp.DomainEntity.Interfaces
     public interface iOrderCartService
     {
         void CancelUserOrderService(int SessionId);
-        int FoodCount(int SessionId);
-        int FoodPriceSum(int SessionId);
+        int GetFoodQuantityBySessionId(int SessionId);
+        int GetFoodPriceTotalAmountBySessionId(int SessionId);
         void UserOrderCartQuantityService(int FoodId, string Operator, int SessionId);
         string UserOrderCartService(int FoodId, int SessionId);
         string ConfirmUserOrderService(int SessionId, int Seat);
         void ClearUserCartService(int SessionId);
-        Food UserOrderedFood(int SessionId);
-        Table CheckUserTable(int SessionId);
-        IEnumerable<OrderCart> UserOrderedFoodList(int FoodId);
+        Food GetUserFoodBySessionId(int SessionId);
+        Table GetUserTableBySessionId(int SessionId);
+        IEnumerable<OrderCart> UserOrderCart(int FoodId);
         void SaveChanges();
     }
 }

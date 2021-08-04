@@ -17,9 +17,8 @@ namespace CafeApp.Persistance.Services
         private OrderCartService _orderCartService = new OrderCartService();
         public void ChangeTableStatus(Table table, int SessionId)
         {
-            var removeTable = _tableRepository.GetTableById(table.TableId);
-            removeTable.UserId = null;
-            removeTable.TableStatus = TableStatus.Empty;
+            _tableRepository.GetTableById(table.TableId).UserId = null;
+            _tableRepository.GetTableById(table.TableId).TableStatus = TableStatus.Empty;
             _orderCartService.ClearUserCartService(SessionId);
             _tableRepository.SaveChanges();
         }

@@ -36,13 +36,14 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = _foodRepository.GetFoodById(id);
-            if (foods == null)
+     
+            if (_foodRepository.GetFoodById(id) == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.FoodPicture = foods.PhotoFile;
-            return View(foods);
+
+            ViewBag.FoodPicture = _foodRepository.GetFoodById(id).PhotoFile;
+            return View(_foodRepository.GetFoodById(id));
         }
 
         // GET: Foods/Create
@@ -105,13 +106,13 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = _foodRepository.GetFoodById(id);
-            ViewBag.FoodPicture = foods.PhotoFile;
-            if (foods == null)
+
+            ViewBag.FoodPicture = _foodRepository.GetFoodById(id).PhotoFile;
+            if (_foodRepository.GetFoodById(id) == null)
             {
                 return HttpNotFound();
             }
-            return View(foods);
+            return View(_foodRepository.GetFoodById(id));
         }
 
         // POST: Foods/Edit/5
@@ -138,13 +139,13 @@ namespace CafeApp.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Food foods = _foodRepository.GetFoodById(id);
-            if (foods == null)
+       
+            if (_foodRepository.GetFoodById(id) == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.FoodPicture = foods.PhotoFile;
-            return View(foods);
+            ViewBag.FoodPicture = _foodRepository.GetFoodById(id).PhotoFile;
+            return View(_foodRepository.GetFoodById(id));
         }
 
         // POST: Foods/Delete/5
@@ -152,10 +153,8 @@ namespace CafeApp.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Food foods = _foodRepository.GetFoodById(id);
-            _foodRepository.DeleteFood(foods);
+            _foodRepository.DeleteFood(_foodRepository.GetFoodById(id));
             return RedirectToAction("Index");
         }
-
     }
 }
