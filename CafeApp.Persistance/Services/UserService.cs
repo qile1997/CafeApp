@@ -45,19 +45,12 @@ namespace CafeApp.Persistance.Services
         }
         public bool CheckDuplicateUser_EditMode(User user)
         {
-            var initUser = _context.Users.Where(d => d.UserId == user.UserId).SingleOrDefault();
-            var notInitUser = _context.Users.Where(d => d.Username != initUser.Username && d.Roles == initUser.Roles).ToList();
-            var duplicateUserExist = notInitUser.Where(d => d.Username == user.Username).SingleOrDefault();
-
-            if (duplicateUserExist != null)
+            foreach (var item in _context.Users.Where(d => d.Username == user.Username && d.Roles == user.Roles).ToList())
             {
-                return true;
+                if (item.Username == user.Username)
+                    return true;
             }
 
-            initUser.Username = user.Username;
-            initUser.Password = user.Password;
-            //initUser.Roles = user.Roles;
-            SaveChanges();
             return false;
         }
 
@@ -68,7 +61,6 @@ namespace CafeApp.Persistance.Services
         public User CheckUserCredentials(LoginCredentialsViewModel userCredentials, Roles roles)
         {
             var user = _context.Users.Where(d => d.Username == userCredentials.Username && d.Password == userCredentials.Password && d.Roles == roles).SingleOrDefault();
-
             return user != null ? user : null;
         }
         public void SaveChanges()

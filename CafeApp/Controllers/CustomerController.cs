@@ -68,7 +68,6 @@ namespace CafeApp.Controllers
         public ActionResult Cart(int Id)
         {
             string message = _orderCartService.UserOrderCartService(Id, Convert.ToInt32(Session["CustomerId"]));
-
             return Json(new { message }, JsonRequestBehavior.AllowGet);
         }
         public ActionResult OrderCart()

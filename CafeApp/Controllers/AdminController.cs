@@ -113,12 +113,13 @@ namespace CafeApp.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 if (_userService.CheckDuplicateUser_EditMode(user))
                 {
                     ViewBag.FailMessage = "This data is already registered in database";
                     return View();
                 }
+                _userRepository.UpdateUser(user);
+                _userRepository.SaveChanges();
             }
             return View(user);
         }

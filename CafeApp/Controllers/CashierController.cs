@@ -35,11 +35,6 @@ namespace CafeApp.Controllers
         // GET: Cashier
         public ActionResult Index()
         {
-            if (_tableService.GetTableStatus())
-            {
-                ViewBag.Message = "";
-                return View(_tableRepository.GetAllTables());
-            }
             return View(_tableRepository.GetAllTables());
         }
 
@@ -64,6 +59,7 @@ namespace CafeApp.Controllers
         public ActionResult Delete(int? id)
         {
             _tableRepository.DeleteTable(_tableRepository.GetTableById(id));
+            _tableService.ReorderTables();
             return RedirectToAction("Index");
         }
 
@@ -73,10 +69,5 @@ namespace CafeApp.Controllers
             return RedirectToAction("Index");
         }
 
-        public ActionResult ReorderTables()
-        {
-            _tableService.ReorderTables();
-            return RedirectToAction("Index");
-        }
     }
 }

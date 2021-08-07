@@ -26,19 +26,18 @@ namespace CafeApp.Persistance.Services
                 SaveChanges();
                 return GetUserFoodBySessionId(FoodId).FoodName + " added into quantity .";
             }
-            else
-            {
-                OrderCart orderCart = new OrderCart()
-                {
-                    FoodsId = FoodId,
-                    TotalAmount = GetUserFoodBySessionId(FoodId).Price,
-                    FoodQuantity = 1,
-                    UserId = SessionId
-                };
 
-                _orderCartRepository.AddOrderCart(orderCart);
-                return GetUserFoodBySessionId(FoodId).FoodName + " added into order .";
-            }
+            OrderCart orderCart = new OrderCart()
+            {
+                FoodsId = FoodId,
+                TotalAmount = GetUserFoodBySessionId(FoodId).Price,
+                FoodQuantity = 1,
+                UserId = SessionId
+            };
+
+            _orderCartRepository.AddOrderCart(orderCart);
+            return GetUserFoodBySessionId(FoodId).FoodName + " added into order .";
+
         }
 
         public void UserOrderCartQuantityService(int FoodsId, string Operator, int SessionId)
@@ -55,7 +54,7 @@ namespace CafeApp.Persistance.Services
             {
                 _orderCartRepository.RemoveOrderCart(UserCart);
             }
-            else
+            else if (Operator == "-")
             {
                 if (UserCart.FoodQuantity > 0)
                 {
@@ -67,6 +66,10 @@ namespace CafeApp.Persistance.Services
                     UserCart.TotalAmount = GetUserFoodBySessionId(FoodsId).Price * UserCart.FoodQuantity;
                     SaveChanges();
                 }
+            }
+            else
+            {
+                throw new InvalidOperationException("Not implemented yet");
             }
         }
 

@@ -7,11 +7,6 @@
 <h2>Manage Tables</h2>
 <p style="float:left">@Html.ActionLink("Create New", "Create")</p>
 
-@if (ViewBag.Message == "")
-{
-    <h5 style="display:inline;float:right" onclick="RefreshPage()"><a href="@Url.Action("ReorderTables","Cashier")" id="btn">Re-order Tables</a></h5>
-}
-
 <table class="table">
     <tr>
         <th>
@@ -24,9 +19,19 @@
             Remove
         </th>
     </tr>
+
     @foreach (var item in Model)
     {
-        if (item.TableNo == 1 || item.TableNo == 2 || item.TableNo == 3 || item.TableNo == 4 || item.TableNo == 5 || item.TableNo == 6 || item.TableNo == 7 || item.TableNo == 8 || item.TableNo == 9 || item.TableNo == 10)
+        if (item.TableNo == 1
+            || item.TableNo == 2 
+            || item.TableNo == 3 
+            || item.TableNo == 4 
+            || item.TableNo == 5 
+            || item.TableNo == 6 
+            || item.TableNo == 7 
+            || item.TableNo == 8 
+            || item.TableNo == 9 
+            || item.TableNo == 10)
         {
             <tr>
                 <td>
@@ -77,12 +82,3 @@
     }
 </table>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script>
-    //$(document).ready(function () {
-    //    $("#btn").click(function () {
-    //        var btn = $("#btn").val();
-    //        console.log('1');
-    //        $("#btn").removeAttr("a");
-    //    })
-    //})
-</script>

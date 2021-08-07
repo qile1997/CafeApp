@@ -10,6 +10,5 @@ namespace CafeApp.DomainEntity.Interfaces
     {
         void ChangeTableStatus(Table table, int SessionId);
         void ReorderTables();
-        bool GetTableStatus();
     }
 }
